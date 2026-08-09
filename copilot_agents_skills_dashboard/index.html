@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en-GB" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title></title>
+  <style>
+    :root {
+      --green: #006b5f;
+      --green-dark: #123c3a;
+      --green-soft: #eaf4f1;
+      --green-border: #b7ded7;
+      --blue: #244aa5;
+      --blue-soft: #eef3ff;
+      --blue-border: #cbd8ff;
+      --amber: #915c00;
+      --amber-soft: #fff5e8;
+      --amber-border: #f3d4a4;
+      --sp-blue: #005a9e;
+      --sp-soft: #eef7ff;
+      --sp-border: #c9e4ff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --rose-soft: #fff1f2;
+      --emerald-soft: #ecfdf5;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      --shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, #ffffff 0%, #f7faf9 48%, var(--green-soft) 100%);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 24px 56px;
+    }
+
+    .stack { display: grid; gap: 28px; }
+    .card, .hero, .section {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero { padding: 32px; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 24px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--green);
+      color: white;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      color: var(--green-dark);
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin: 14px 0 16px;
+    }
+    h2 { font-size: clamp(1.35rem, 2vw, 1.75rem); margin-bottom: 18px; }
+    h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .lead { color: #334155; font-size: 1.12rem; max-width: 840px; margin-bottom: 0; }
+    .short-box {
+      background: #f4efe9;
+      border: 1px solid #e5d3bd;
+      border-radius: 22px;
+      padding: 18px;
+    }
+    .short-box strong:first-child { color: #6b4b21; display: block; margin-bottom: 8px; }
+
+    .concept-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .concept-btn {
+      border: 1px solid;
+      border-radius: 22px;
+      padding: 18px;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform .18s ease, box-shadow .18s ease, outline .18s ease;
+      min-height: 162px;
+      font: inherit;
+    }
+    .concept-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .concept-btn.active { outline: 3px solid var(--green); outline-offset: 2px; }
+    .concept-btn .icon-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; font-weight: 800; font-size: 1.12rem; }
+    .concept-btn p { font-size: .95rem; margin: 0; }
+    .concept-copilot { background: var(--green-soft); color: var(--green); border-color: var(--green-border); }
+    .concept-agent { background: var(--blue-soft); color: var(--blue); border-color: var(--blue-border); }
+    .concept-skill { background: var(--amber-soft); color: var(--amber); border-color: var(--amber-border); }
+    .concept-sp { background: var(--sp-soft); color: var(--sp-blue); border-color: var(--sp-border); }
+
+    .main-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr); gap: 24px; }
+    .card { padding: 24px; }
+    .detail-title { display: flex; gap: 12px; align-items: center; color: var(--green-dark); }
+    .info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .info-box { background: var(--surface-soft); border-radius: 18px; padding: 16px; }
+    .info-box.full { grid-column: 1 / -1; }
+    .eyebrow { color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 4px; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 9px; }
+    .pill {
+      display: inline-flex;
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 13px;
+      font-weight: 650;
+      color: #334155;
+    }
+    .watchout {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #fff8e8;
+      border: 1px solid #edd69a;
+      color: #334155;
+    }
+
+    .decision-list { display: grid; gap: 12px; }
+    .decision-item { border: 1px solid var(--border); border-radius: 18px; background: white; padding: 14px; }
+    .decision-item small { color: var(--muted); font-weight: 700; display: block; margin-bottom: 4px; }
+    .decision-item p { margin-bottom: 6px; font-weight: 700; }
+    .decision-item .answer { color: var(--green); font-size: .95rem; font-weight: 700; }
+
+    .comparison { padding: 24px; overflow-x: auto; }
+    table { width: 100%; min-width: 900px; border-collapse: collapse; font-size: .92rem; }
+    th, td { padding: 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); }
+    th { background: var(--green-dark); color: white; }
+    th:first-child { border-radius: 14px 0 0 14px; }
+    th:last-child { border-radius: 0 14px 14px 0; }
+    td:first-child { font-weight: 800; background: var(--surface-soft); color: var(--green-dark); }
+
+    .two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+    .without-with { display: grid; gap: 16px; }
+    .ww-item { border: 1px solid var(--border); border-radius: 18px; padding: 16px; background: white; }
+    .ww-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; font-size: .92rem; }
+    .without { background: var(--rose-soft); border-radius: 14px; padding: 12px; }
+    .with { background: var(--emerald-soft); border-radius: 14px; padding: 12px; }
+    .why { margin: 10px 0 0; color: #475569; font-size: .92rem; }
+
+    .context-card p { color: #334155; }
+    .analogy-box { display: flex; gap: 12px; background: var(--green-soft); border: 1px solid var(--green-border); border-radius: 18px; padding: 16px; }
+
+    .usecase-head { display: flex; justify-content: space-between; gap: 18px; align-items: center; }
+    .search-wrap { position: relative; width: min(100%, 420px); }
+    .search-wrap input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px 12px 40px;
+      font: inherit;
+      outline: none;
+      background: white;
+    }
+    .search-wrap input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(0,107,95,.12); }
+    .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+    .usecase-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+    .usecase { background: var(--surface-soft); border: 1px solid var(--border); border-radius: 18px; padding: 16px; }
+    .usecase h3 { color: var(--green-dark); }
+    .usecase .choose { margin: 10px 0; }
+    .empty-state { color: var(--muted); padding: 16px; border: 1px dashed var(--border); border-radius: 16px; display: none; }
+
+    .governance { background: var(--green-dark); color: white; border-radius: 28px; padding: 28px; }
+    .gov-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .gov-item { background: rgba(255,255,255,.1); border-radius: 18px; padding: 16px; }
+    .gov-item p { color: rgba(255,255,255,.84); margin-bottom: 0; }
+
+    footer.section { padding: 24px; color: #475569; font-size: .92rem; }
+    footer ul { margin: 0; padding-left: 22px; }
+    .icon { width: 22px; height: 22px; display: inline-block; flex: 0 0 auto; }
+    .title-icon { color: var(--green); }
+
+    @media (max-width: 980px) {
+      .hero-grid, .main-grid, .two-col { grid-template-columns: 1fr; }
+      .concept-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .usecase-grid, .gov-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .page { padding: 18px 14px 40px; }
+      .hero, .card, .section, .governance { border-radius: 22px; padding: 20px; }
+      .concept-grid, .usecase-grid, .gov-grid, .info-grid, .ww-columns { grid-template-columns: 1fr; }
+      .usecase-head { align-items: stretch; flex-direction: column; }
+      h1 { font-size: 2.25rem; }
+    }
+  </style>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor msdt:dt="string">Anand Vijayaragavan</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor>
+<mso:Order msdt:dt="string">3529300.00000000</mso:Order>
+<mso:_activity msdt:dt="string">{&quot;FileActivityType&quot;:&quot;9&quot;,&quot;FileActivityTimeStamp&quot;:&quot;2026-07-08T13:55:46.290Z&quot;,&quot;FileActivityUsersOnPage&quot;:[{&quot;DisplayName&quot;:&quot;Anand Vijayaragavan&quot;,&quot;Id&quot;:&quot;anand.vijayaragavan@business-sweden.se&quot;}],&quot;FileActivityNavigationId&quot;:null}</mso:_activity>
+<mso:_ExtendedDescription msdt:dt="string"></mso:_ExtendedDescription>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author msdt:dt="string">Anand Vijayaragavan</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author>
+<mso:ComplianceAssetId msdt:dt="string"></mso:ComplianceAssetId>
+<mso:TriggerFlowInfo msdt:dt="string"></mso:TriggerFlowInfo>
+<mso:ContentTypeId msdt:dt="string">0x0101002585C2E0E3D41342AB49490CA79F49CC</mso:ContentTypeId>
+<mso:_SourceUrl msdt:dt="string"></mso:_SourceUrl>
+<mso:_SharedFileIndex msdt:dt="string"></mso:_SharedFileIndex>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+  <main class="page stack">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <span class="badge">Business Sweden explainer</span>
+          <h1>Copilot vs Agents vs Skills vs Copilot + Skills in SharePoint</h1>
+          <p class="lead">A clear, practical way to explain the difference: Copilot helps, agents specialise, skills standardise, and SharePoint skills bring repeatable work into the site where the content already lives.</p>
+        </div>
+        <aside class="short-box">
+          <strong>The shortest version</strong>
+          <p>Use <b>Copilot</b> for flexible help, <b>Agents</b> for specialised assistants, <b>Skills</b> for reusable methods, and <b>SharePoint Skills</b> when the work is grounded in a site, list, library, or page.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="concept-grid" id="conceptCards"></section>
+
+    <section class="main-grid">
+      <article class="card" id="detailCard"></article>
+      <aside class="card">
+        <h2 class="detail-title"><span class="icon title-icon">⚙️</span> Decision guide</h2>
+        <div class="decision-list" id="decisionList"></div>
+      </aside>
+    </section>
+
+    <section class="section comparison">
+      <h2 class="detail-title"><span class="icon title-icon">📖</span> Clear comparison table</h2>
+      <table aria-label="Comparison table">
+        <thead id="comparisonHead"></thead>
+        <tbody id="comparisonBody"></tbody>
+      </table>
+    </section>
+
+    <section class="two-col">
+      <article class="card">
+        <h2 class="detail-title"><span class="icon title-icon">🔁</span> Copilot without Skills vs with Skills</h2>
+        <div class="without-with" id="withoutWithList"></div>
+      </article>
+      <article class="card context-card">
+        <h2 class="detail-title"><span class="icon title-icon">🧠</span> The “context overload” explanation</h2>
+        <p><b>Without a skill:</b> users often paste the same long instruction pack every time: tone, brand rules, examples, checklist, output format, do/don’t guidance, and quality criteria.</p>
+        <p><b>Problem:</b> that repeated guidance consumes the conversation’s attention and makes the prompt harder to maintain. The real task content competes with the instruction content.</p>
+        <p><b>With a skill:</b> those reusable instructions live as a separate module. Copilot can load the relevant method when needed, instead of relying on the user to re-paste everything.</p>
+        <div class="analogy-box"><span class="icon">✅</span><p><b>Easy analogy:</b> A skill is not the whole kitchen. It is the recipe card. Copilot is the cook. The SharePoint site is the pantry. The agent is the specialist chef for a certain cuisine.</p></div>
+      </article>
+    </section>
+
+    <section class="section card">
+      <div class="usecase-head">
+        <h2 class="detail-title"><span class="icon title-icon">🗄️</span> Use cases and examples</h2>
+        <label class="search-wrap">
+          <span class="search-icon">🔎</span>
+          <input id="usecaseSearch" type="search" placeholder="Search use cases..." aria-label="Search use cases" />
+        </label>
+      </div>
+      <div class="usecase-grid" id="usecaseGrid"></div>
+      <div class="empty-state" id="emptyState">No matching use cases found.</div>
+    </section>
+
+    <section class="governance">
+      <h2 class="detail-title"><span class="icon">🛡️</span> Governance notes for Business Sweden</h2>
+      <div class="gov-grid">
+        <div class="gov-item"><b>Own the skill library</b><p>Decide who approves, names, updates, and retires reusable skills.</p></div>
+        <div class="gov-item"><b>Keep permissions clean</b><p>Skills should not be used to bypass SharePoint access. They should follow normal site permissions.</p></div>
+        <div class="gov-item"><b>Start with high-repeat work</b><p>Prioritise reports, review checklists, branded outputs, dashboards, metadata, and content governance.</p></div>
+      </div>
+    </section>
+
+    <footer class="section">
+      <h2 class="detail-title"><span class="icon title-icon">📄</span> Source notes used to shape this page</h2>
+      <ul>
+        <li>Microsoft Learn: Copilot in SharePoint skills extend Copilot by turning repeatable multi-step workflows into reusable site assets; skills can capture organisation-specific rules and run within existing permissions.</li>
+        <li>Microsoft Learn: Microsoft 365 Copilot agents extend Copilot as specialised assistants with knowledge, data sources, and actions for domain-specific work.</li>
+        <li>Claude Help Center: Skills use progressive disclosure, where relevant instructions are loaded dynamically to improve consistency and help avoid context window overload.</li>
+        <li>Business Sweden internal materials: skills are positioned as reusable instructions for consistent outputs, team scaling, dashboards, management briefings, and SharePoint-grounded processes.</li>
+      </ul>
+    </footer>
+  </main>
+
+  <script>
+    const concepts = [
+      {
+        key: 'copilot', label: 'Copilot', icon: '✨', css: 'concept-copilot',
+        plain: 'The general AI assistant you ask questions or give tasks to.',
+        analogy: 'Like a very capable colleague you can ask for help right now.',
+        useWhen: 'Use when the task is broad, exploratory, one-off, or you need help drafting, summarising, researching, brainstorming, or finding information.',
+        examples: ['Summarise this document', 'Draft a reply', 'Compare these options', 'Find what I missed in this meeting'],
+        limits: 'Copilot depends heavily on the prompt and the context you provide. If the task needs the same structure every time, a one-off prompt may drift.'
+      },
+      {
+        key: 'agent', label: 'Agent', icon: '🤖', css: 'concept-agent',
+        plain: 'A specialised AI assistant focused on a role, domain, data source, or business process.',
+        analogy: 'Like a named specialist: “Proposal Assistant”, “HR Policy Agent”, or “Project PMO Agent”.',
+        useWhen: 'Use when people need a repeatable assistant for a defined audience, knowledge area, or workflow — especially when the assistant should connect to specific knowledge sources or actions.',
+        examples: ['Sales proposal agent', 'Policy Q&A agent', 'Project onboarding agent', 'Customer insight agent'],
+        limits: 'An agent still needs good instructions, scoped knowledge, testing, governance, and clear boundaries.'
+      },
+      {
+        key: 'skill', label: 'Skill', icon: '🧩', css: 'concept-skill',
+        plain: 'Reusable instructions that tell Copilot or an agent how to do a specific task consistently.',
+        analogy: 'Like a recipe card, checklist, or standard operating procedure the AI can load when needed.',
+        useWhen: 'Use when you repeat the same prompt, format, checklist, tone, layout, naming rule, reporting method, or quality criteria.',
+        examples: ['Business Sweden news writing skill', 'Management briefing skill', 'Brand-aligned PowerPoint skill', 'AI answer readiness audit skill'],
+        limits: 'A skill does not magically add unlimited new capabilities. In SharePoint, it chains what Copilot in SharePoint can already do and respects permissions.'
+      },
+      {
+        key: 'sp', label: 'Copilot + Skills in SharePoint', icon: '🔗', css: 'concept-sp',
+        plain: 'Copilot embedded in SharePoint, plus reusable site-level skills stored with the site.',
+        analogy: 'Like giving a SharePoint site its own playbook: “This is how we review, structure, publish, and visualise work here.”',
+        useWhen: 'Use when the task is grounded in SharePoint pages, files, libraries, lists, site processes, or team standards.',
+        examples: ['Turn a list into an HTML dashboard', 'Review documents against a checklist', 'Organise files by naming rules', 'Create a recurring report from site content'],
+        limits: 'Best results require clean content, sensible permissions, clear metadata, and governed skill ownership.'
+      }
+    ];
+
+    const comparison = [
+      ['Primary purpose', 'General assistant for work', 'Specialised assistant for a domain/process', 'Reusable task instructions', 'Site-aware assistant + reusable workflows'],
+      ['Best for', 'One-off help and exploration', 'Domain-specific help and actions', 'Repeatable quality and consistency', 'SharePoint-grounded content, lists, libraries, and processes'],
+      ['Context model', 'Uses what you provide or what it can access', 'Scoped to configured knowledge/actions', 'Loads only relevant instructions when needed', 'Uses SharePoint site context and saved skill files'],
+      ['Example', '“Summarise this file”', '“Ask the HR Policy Agent”', '“Run the management briefing skill”', '“Create an interactive dashboard from this list using our design skill”'],
+      ['Governance need', 'Prompt guidance and user training', 'Ownership, data sources, guardrails, publishing', 'Naming, versioning, approval, retirement', 'SharePoint permissions, skill ownership, content quality']
+    ];
+
+    const withoutWith = [
+      { area: 'Prompting effort', without: 'You explain the task again each time.', with: 'You define the reusable method once and invoke it again.', why: 'Less rework and fewer “perfect prompt” dependencies.' },
+      { area: 'Consistency', without: 'Output changes depending on who prompts and how they phrase it.', with: 'Output follows the same structure, tone, checklist, and quality rules.', why: 'Especially useful for leadership briefings, branded content, reports, audits, and templates.' },
+      { area: 'Context window overload', without: 'Users often paste long instructions, brand rules, examples, and checklists into every prompt.', with: 'The skill acts like modular context. Copilot loads the relevant instructions only when needed.', why: 'This prevents the conversation from being stuffed with repeated guidance and leaves more room for task-specific material.' },
+      { area: 'Team scale', without: 'Good prompting knowledge stays with individuals.', with: 'Good working methods become shared assets available to the team.', why: 'Skills turn individual know-how into reusable organisational capability.' },
+      { area: 'Quality control', without: 'Everyone improvises their own version of the process.', with: 'Approved standards can be captured, reused, reviewed, and improved.', why: 'Better for governance, brand, legal/compliance reviews, and operational maturity.' }
+    ];
+
+    const useCases = [
+      { team: 'Marketing / Communications', task: 'Create campaign or intranet pages using approved tone, layout, and visual structure.', choose: 'Skill in SharePoint', value: 'Consistent brand output without rewriting the same instruction every time.' },
+      { team: 'Management', task: 'Turn project updates into executive briefings with fixed decisions, risks, actions, and next steps.', choose: 'Skill', value: 'Same briefing format across teams and reporting cycles.' },
+      { team: 'Legal / Compliance', task: 'Review a policy or contract against defined checklist items.', choose: 'SharePoint Skill or Agent', value: 'Repeatable checks while keeping human approval for judgement.' },
+      { team: 'Sales / Investment Promotion', task: 'Answer questions using curated knowledge and generate proposal drafts.', choose: 'Agent + Skills', value: 'The agent provides the domain interface; skills standardise outputs.' },
+      { team: 'Project teams', task: 'Create trackers, reports, and summaries from SharePoint lists and files.', choose: 'Copilot in SharePoint + Skills', value: 'Turns site content into operational outputs quickly.' },
+      { team: 'Personal productivity', task: 'Summarise unread mail, draft a message, brainstorm an agenda.', choose: 'Copilot', value: 'Fast, flexible, no need to create reusable structure.' }
+    ];
+
+    const decisionTree = [
+      { q: 'Is this a one-off task?', a: 'Use Copilot.' },
+      { q: 'Will you repeat the same task or format?', a: 'Create a Skill.' },
+      { q: 'Does the task live mainly in a SharePoint site, list, library, or page?', a: 'Use Copilot + Skills in SharePoint.' },
+      { q: 'Do users need a named assistant for a role, domain, or connected business process?', a: 'Use an Agent, supported by Skills where consistency matters.' },
+      { q: 'Does it need deterministic workflow, approvals, integrations, or scheduled execution?', a: 'Consider Power Automate or Copilot Studio patterns alongside agents/skills.' }
+    ];
+
+    let active = 'copilot';
+
+    const el = (tag, attrs = {}, children = []) => {
+      const node = document.createElement(tag);
+      Object.entries(attrs).forEach(([key, value]) => {
+        if (key === 'className') node.className = value;
+        else if (key === 'text') node.textContent = value;
+        else if (key === 'html') node.innerHTML = value;
+        else node.setAttribute(key, value);
+      });
+      children.forEach(child => node.appendChild(typeof child === 'string' ? document.createTextNode(child) : child));
+      return node;
+    };
+
+    function renderConceptCards() {
+      const target = document.getElementById('conceptCards');
+      target.innerHTML = '';
+      concepts.forEach(item => {
+        const btn = el('button', {
+          className: `concept-btn ${item.css} ${item.key === active ? 'active' : ''}`,
+          type: 'button',
+          'aria-pressed': item.key === active ? 'true' : 'false'
+        });
+        btn.innerHTML = `<div class="icon-row"><span class="icon">${item.icon}</span><span>${item.label}</span></div><p>${item.plain}</p>`;
+        btn.addEventListener('click', () => { active = item.key; renderConceptCards(); renderDetailCard(); });
+        target.appendChild(btn);
+      });
+    }
+
+    function renderDetailCard() {
+      const item = concepts.find(c => c.key === active);
+      const target = document.getElementById('detailCard');
+      target.innerHTML = `
+        <h2 class="detail-title"><span class="icon title-icon">${item.icon}</span>${item.label}</h2>
+        <div class="info-grid">
+          <div class="info-box"><div class="eyebrow">What it is</div><p>${item.plain}</p></div>
+          <div class="info-box"><div class="eyebrow">Analogy</div><p>${item.analogy}</p></div>
+          <div class="info-box full"><div class="eyebrow">When to use it</div><p>${item.useWhen}</p></div>
+        </div>
+        <h3 style="margin-top:20px;">Example prompts / scenarios</h3>
+        <div class="pill-row">${item.examples.map(e => `<span class="pill">${e}</span>`).join('')}</div>
+        <div class="watchout"><span class="icon">⚠️</span><p><b>Watch-out:</b> ${item.limits}</p></div>
+      `;
+    }
+
+    function renderDecisionList() {
+      document.getElementById('decisionList').innerHTML = decisionTree.map((d, i) => `
+        <div class="decision-item"><small>Question ${i + 1}</small><p>${d.q}</p><div class="answer">→ ${d.a}</div></div>
+      `).join('');
+    }
+
+    function renderComparison() {
+      document.getElementById('comparisonHead').innerHTML = `
+        <tr><th>Question</th>${concepts.map(c => `<th>${c.label}</th>`).join('')}</tr>
+      `;
+      document.getElementById('comparisonBody').innerHTML = comparison.map(row => `
+        <tr><td>${row[0]}</td>${row.slice(1).map(cell => `<td>${cell}</td>`).join('')}</tr>
+      `).join('');
+    }
+
+    function renderWithoutWith() {
+      document.getElementById('withoutWithList').innerHTML = withoutWith.map(x => `
+        <div class="ww-item">
+          <h3>${x.area}</h3>
+          <div class="ww-columns">
+            <div class="without"><b>Without Skills:</b> ${x.without}</div>
+            <div class="with"><b>With Skills:</b> ${x.with}</div>
+          </div>
+          <p class="why"><b>Why it matters:</b> ${x.why}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderUseCases(query = '') {
+      const filtered = useCases.filter(u => `${u.team} ${u.task} ${u.choose} ${u.value}`.toLowerCase().includes(query.toLowerCase()));
+      document.getElementById('usecaseGrid').innerHTML = filtered.map(u => `
+        <article class="usecase">
+          <h3>${u.team}</h3>
+          <p>${u.task}</p>
+          <span class="badge choose">${u.choose}</span>
+          <p><b>Value:</b> ${u.value}</p>
+        </article>
+      `).join('');
+      document.getElementById('emptyState').style.display = filtered.length ? 'none' : 'block';
+    }
+
+    document.getElementById('usecaseSearch').addEventListener('input', event => renderUseCases(event.target.value));
+    renderConceptCards();
+    renderDetailCard();
+    renderDecisionList();
+    renderComparison();
+    renderWithoutWith();
+    renderUseCases();
+  </script>
+</body>
+</html>

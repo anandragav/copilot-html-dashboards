@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Microsoft Lists in SharePoint — Begin-to-End Learning Experience</title>
+<style>
+:root{
+--navy:#03274A;--blue:#164C80;--slate:#7D9AB2;--pale:#CAD8E5;--yellow:#FFD633;
+--black:#161616;--muted:#5A5A57;--ice:#F5F8FB;--line:#D7E2EC;--warm:#F7F5F3;
+--green:#2E7D5B;--pink:#C85C8E;--orange:#D9822B;
+}
+*{box-sizing:border-box}
+html{font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;font-size:16px;scroll-behavior:smooth}
+body{margin:0;color:var(--black);line-height:1.55;background:linear-gradient(180deg,#F7FBFF 0%,#FFFFFF 42%,#F7FBFF 100%)}
+a{color:var(--blue);font-weight:700}
+.wrap{max-inline-size:1220px;margin-inline:auto;padding:24px}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;background:var(--navy);color:#fff;border-radius:28px;padding:36px;box-shadow:0 22px 55px rgba(3,39,74,.18)}
+.heroGrid{display:grid;grid-template-columns:1.05fr .95fr;gap:26px;align-items:center}
+.kicker{color:var(--yellow);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:13px}
+.hero h1{font-size:clamp(34px,5.4vw,64px);line-height:.98;margin:12px 0;letter-spacing:-.04em}
+.hero p.lede{font-size:19px;line-height:1.45;color:#DCE8F3;max-inline-size:640px;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-block-start:22px}
+.chip{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:9px 14px;color:#fff;font-weight:700;font-size:14px}
+.short{background:#fff;color:var(--navy);border-radius:20px;padding:20px;margin-block-start:22px;border-left:8px solid var(--yellow)}
+.short b{display:block;font-size:17px;margin-block-end:6px}
+.illus{inline-size:100%;height:auto;display:block}
+
+/* ---------- sections ---------- */
+.section{margin-block-start:26px;background:#fff;border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 12px 35px rgba(3,39,74,.07)}
+.section h2{color:var(--navy);font-size:30px;margin:0 0 6px;letter-spacing:-.03em}
+.section .lead{color:var(--muted);font-size:17px;margin:0 0 20px}
+.section h3{color:var(--navy)}
+.stepno{display:inline-grid;place-items:center;inline-size:38px;block-size:38px;border-radius:12px;background:var(--yellow);color:var(--navy);font-weight:900;margin-inline-end:12px;vertical-align:middle;font-size:16px}
+hr.div{border:none;border-top:1px solid var(--line);margin-block:32px}
+
+/* ---------- learning rail ---------- */
+.rail{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-block-start:18px}
+.railItem{background:var(--ice);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center}
+.railItem b{display:block;color:var(--navy);font-size:14px;margin-block-end:4px}
+.railItem span{font-size:12px;color:var(--muted)}
+.railDot{display:inline-grid;place-items:center;inline-size:28px;block-size:28px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;font-size:13px;margin-block-end:8px}
+
+/* ---------- grids & cards ---------- */
+.grid{display:grid;gap:16px}
+.cols2{grid-template-columns:repeat(2,1fr)}
+.cols3{grid-template-columns:repeat(3,1fr)}
+.cols4{grid-template-columns:repeat(4,1fr)}
+.card{border:1px solid var(--line);border-radius:20px;padding:18px;background:#fff;box-shadow:0 8px 24px rgba(3,39,74,.06)}
+.card h3{margin:8px 0;font-size:19px}
+.card p,.card li{color:#333;line-height:1.45}
+.card .tag{display:inline-block;background:#EAF2FA;color:var(--blue);border-radius:999px;padding:4px 10px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;margin-block-end:8px}
+.icon{inline-size:44px;block-size:44px;border-radius:16px;background:#EAF2FA;display:grid;place-items:center;color:var(--blue);font-weight:900;font-size:20px}
+.pill{display:inline-block;background:#EAF2FA;color:var(--blue);border:1px solid var(--pale);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;margin:0 6px 6px 0}
+.pillrow{display:flex;flex-wrap:wrap;margin-block-start:10px}
+
+/* ---------- callouts ---------- */
+.note{background:#EAF2FA;border-left:5px solid var(--blue);border-radius:6px;padding:14px 18px;margin-block:18px}
+.warn{background:#FFF9E6;border-left:5px solid var(--yellow);border-radius:6px;padding:14px 18px;margin-block:18px}
+.good{background:#E9F5EF;border-left:5px solid var(--green);border-radius:6px;padding:14px 18px;margin-block:18px}
+.note p,.warn p,.good p{margin:0}
+
+/* ---------- pedagogy blocks ---------- */
+.ped{background:var(--ice);border:1px solid var(--line);border-radius:22px;padding:20px;margin-block-end:16px}
+.pedHead{display:flex;align-items:center;gap:12px;margin-block-end:12px}
+.pedHead h3{margin:0;font-size:21px}
+.pedGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pedCell{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+.pedCell b{display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--blue);margin-block-end:6px}
+.pedCell.check{border-color:#BFE3D2;background:#F2FAF6}
+.pedCell.check b{color:var(--green)}
+.pedCell p{margin:0;font-size:14px;line-height:1.45}
+
+/* ---------- flashcards (CSS-only animated flip) ---------- */
+.deck{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-block-start:18px}
+.flip{background:transparent;perspective:1200px;border:0;padding:0;min-block-size:200px;cursor:pointer;display:block;inline-size:100%;font:inherit;text-align:start}
+.flipInner{position:relative;inline-size:100%;block-size:100%;min-block-size:200px;transition:transform .65s cubic-bezier(.22,.68,.35,1.02);transform-style:preserve-3d}
+.flip:hover .flipInner,.flip:focus .flipInner,.flip:focus-within .flipInner{transform:rotateY(180deg)}
+.flipFace{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:18px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);box-shadow:0 10px 26px rgba(3,39,74,.08)}
+.flipFront{background:#fff}
+.flipBack{background:var(--navy);color:#fff;transform:rotateY(180deg);border-color:var(--navy)}
+.flipBack p{color:#DCE8F3;margin:0;font-size:14.5px;line-height:1.5}
+.flipFront h4{margin:10px 0 6px;color:var(--navy);font-size:18px}
+.flipFront p{margin:0;font-size:14px;color:var(--muted)}
+.flipTag{font-size:11px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:var(--blue)}
+.flipBack .flipTag{color:var(--yellow)}
+.flipHint{font-size:11.5px;color:var(--slate);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.deckHint{background:var(--warm);border:1px dashed var(--pale);border-radius:14px;padding:10px 14px;font-size:13.5px;color:var(--muted);margin-block-start:14px}
+
+/* ---------- accordion ---------- */
+details{border:1px solid var(--line);border-radius:16px;padding:0;margin-block-end:12px;background:#fff;overflow:hidden}
+details summary{cursor:pointer;padding:15px 18px;font-weight:800;color:var(--navy);list-style:none;background:var(--ice)}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";float:right;font-weight:900;color:var(--blue)}
+details[open] summary::after{content:"\2212"}
+details .body{padding:16px 18px;border-top:1px solid var(--line)}
+details .body p:first-child{margin-block-start:0}
+
+/* ---------- table ---------- */
+.tableWrap{overflow:auto;border:1px solid var(--line);border-radius:18px;margin-block-start:16px}
+table{border-collapse:collapse;inline-size:100%;min-inline-size:760px;background:#fff}
+th{background:var(--navy);color:#fff;text-align:start;padding:13px;font-size:14px}
+td{border-top:1px solid var(--line);padding:13px;vertical-align:top;font-size:14.5px;line-height:1.4}
+tr:nth-child(even) td{background:#F8FBFD}
+
+/* ---------- timeline mock ---------- */
+.tl{position:relative;margin-block-start:22px;padding-block:28px 10px;overflow:auto}
+.tlTrack{position:relative;min-inline-size:820px}
+.tlLine{position:absolute;inset-block-start:34px;inset-inline:12px;block-size:6px;background:var(--pale);border-radius:3px}
+.tlRow{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;min-inline-size:820px}
+.tlNode{text-align:center;position:relative;padding-block-start:0}
+.tlDot{inline-size:26px;block-size:26px;border-radius:50%;margin-inline:auto;border:5px solid #fff;box-shadow:0 0 0 2px var(--pale);position:relative;z-index:2}
+.tlDot.done{background:var(--green)}
+.tlDot.now{background:var(--yellow)}
+.tlDot.next{background:var(--slate)}
+.tlDot.late{background:var(--pink)}
+.tlCard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px;margin-block-start:12px;box-shadow:0 6px 18px rgba(3,39,74,.07);font-size:13px}
+.tlCard b{display:block;color:var(--navy);font-size:13.5px}
+.tlCard span{color:var(--muted);font-size:12px}
+.tlBadge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-block-start:6px}
+.b-done{background:#E9F5EF;color:var(--green)}
+.b-now{background:#FFF6D6;color:#7A5B00}
+.b-next{background:#EDF2F7;color:var(--blue)}
+.b-late{background:#FBEBF2;color:var(--pink)}
+
+/* ---------- use cases ---------- */
+.case{display:flex;gap:14px;align-items:flex-start}
+.avatar{flex:0 0 46px;inline-size:46px;block-size:46px;border-radius:50%;background:var(--pale);display:grid;place-items:center;font-weight:900;color:var(--navy)}
+.case h3{margin:0 0 6px;font-size:18px}
+.case p{margin:0 0 6px;font-size:14px}
+.realTag{display:inline-block;background:#E9F5EF;color:var(--green);border-radius:999px;padding:3px 9px;font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+
+/* ---------- CTA ---------- */
+.cta{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border-color:var(--navy)}
+.cta h2,.cta h3{color:#fff}
+.cta .lead{color:#DCE8F3}
+.cta .card{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.20);color:#fff;box-shadow:none}
+.cta .card p,.cta .card li{color:#EAF2FA}
+.cta .card a{color:var(--yellow)}
+.cta .icon{background:rgba(255,255,255,.14);color:var(--yellow)}
+
+.sources{font-size:13px;color:var(--muted)}
+.sources b{color:var(--navy)}
+.footer{padding:24px;color:var(--muted);font-weight:800;text-align:center;letter-spacing:.06em}
+
+/* ---------- flat vector art tokens ---------- */
+.artLabel{font-size:11px;letter-spacing:.08em;text-transform:uppercase;fill:#8FA9C0;font-weight:800}
+.face{stroke:#3F2A1D;stroke-width:2;stroke-linecap:round;fill:none}
+.hair1{fill:#2B1B12}.hair2{fill:#3D2418}.hair3{fill:#111}.hair4{fill:#6B4423}.hair5{fill:#C99A57}
+.skin1{fill:#8D5524}.skin2{fill:#C68642}.skin3{fill:#F1C27D}.skin4{fill:#E0AC69}.skin5{fill:#5C3A21}
+.cloth1{fill:#164C80}.cloth2{fill:#FFD633}.cloth3{fill:#C85C8E}.cloth4{fill:#2E7D5B}.cloth5{fill:#7D9AB2}.cloth6{fill:#D9822B}
+
+@media(max-width:980px){
+.heroGrid,.cols2,.cols3,.cols4,.deck,.pedGrid,.rail{grid-template-columns:1fr}
+.hero{padding:24px}.section{padding:20px}.wrap{padding:14px}
+.hero h1{font-size:34px}
+}
+@media print{
+body{background:#fff}
+.hero,.cta{background:#fff!important;color:#000!important;box-shadow:none}
+.hero h1,.hero p.lede,.cta h2,.cta h3,.cta .lead,.cta .card p{color:#000!important}
+.section{box-shadow:none;break-inside:avoid}
+.flipInner{transform:none!important}
+.flipBack{position:static;transform:none;background:#fff;color:#000;border-top:0}
+.flipFace{position:static;box-shadow:none}
+.flip,.flipInner{min-block-size:0}
+details{break-inside:avoid}
+details .body{display:block}
+}
+@media (prefers-reduced-motion: reduce){.flipInner{transition:none}}
+@media (prefers-color-scheme: dark){:root{color-scheme:light}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="heroGrid">
+    <div>
+      <p class="kicker">Microsoft 365 &middot; A practical begin-to-end guide</p>
+      <h1>Lists in SharePoint, from zero to confident</h1>
+      <p class="lede">A complete, begin-to-end learning experience. Work through it in order and you will finish able to plan a list, build it from a template, collect information safely with a form, shape views &mdash; including a project timeline &mdash; and know exactly where to take it next.</p>
+      <div class="chips">
+        <span class="chip">8 guided workflows</span>
+        <span class="chip">18 flip flashcards</span>
+        <span class="chip">Real-world examples</span>
+        <span class="chip">~35 minutes</span>
+      </div>
+      <div class="short">
+        <b>The one-sentence version</b>
+        A SharePoint list is a shared, smart table &mdash; one row per thing you are tracking, one column per fact about it &mdash; that everyone works from, sees their own way, and gets notified about.
+      </div>
+    </div>
+    <div>
+      <svg class="illus" viewBox="0 0 660 500" role="img" aria-label="Illustrated team collaborating around a SharePoint list on screen">
+        <rect x="14" y="34" width="440" height="320" rx="28" fill="#ffffff" opacity=".97"/>
+        <rect x="44" y="70" width="380" height="34" rx="11" fill="#CAD8E5"/>
+        <circle cx="62" cy="87" r="7" fill="#164C80"/>
+        <rect x="80" y="81" width="150" height="12" rx="6" fill="#7D9AB2"/>
+        <rect x="44" y="124" width="104" height="30" rx="9" fill="#FFD633"/>
+        <rect x="158" y="124" width="104" height="30" rx="9" fill="#EAF2FA"/>
+        <rect x="272" y="124" width="104" height="30" rx="9" fill="#EAF2FA"/>
+        <g fill="#D7E2EC">
+          <rect x="44" y="176" width="300" height="13" rx="6.5"/>
+          <rect x="44" y="212" width="336" height="13" rx="6.5"/>
+          <rect x="44" y="248" width="268" height="13" rx="6.5"/>
+          <rect x="44" y="284" width="318" height="13" rx="6.5"/>
+        </g>
+        <g><rect x="356" y="172" width="60" height="21" rx="10" fill="#E9F5EF"/><rect x="356" y="208" width="60" height="21" rx="10" fill="#FFF6D6"/><rect x="356" y="244" width="60" height="21" rx="10" fill="#FBEBF2"/><rect x="356" y="280" width="60" height="21" rx="10" fill="#E9F5EF"/></g>
+
+        <!-- character A: woman, dark hair, navy top -->
+        <g transform="translate(430 150)">
+          <circle cx="70" cy="62" r="42" class="skin3"/>
+          <path d="M27 62c2-38 24-58 54-54 29 4 47 27 40 63-8-6-16-10-25-12l-4-16-14 13c-17 3-35 3-51 6z" class="hair1"/>
+          <circle cx="54" cy="62" r="4.2" fill="#161616"/><circle cx="86" cy="62" r="4.2" fill="#161616"/>
+          <path d="M47 51c5-4 11-4 15-1M76 50c5-4 11-4 15 1" class="face"/>
+          <path d="M58 84c14 9 27 8 37-2" class="face"/>
+          <circle cx="44" cy="72" r="6" fill="#E8A0A0" opacity=".5"/><circle cx="96" cy="72" r="6" fill="#E8A0A0" opacity=".5"/>
+          <rect x="22" y="106" width="96" height="118" rx="32" class="cloth1"/>
+          <path d="M42 122c22 20 44 20 62 0" stroke="#FFD633" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <rect x="60" y="122" width="20" height="46" rx="10" fill="#0E3A63"/>
+        </g>
+        <!-- character B: man, curly hair, pink top -->
+        <g transform="translate(250 300)">
+          <circle cx="50" cy="44" r="32" class="skin1"/>
+          <path d="M18 46c-2-30 20-46 47-40 20 5 28 20 22 42-6-4-13-6-20-6l-3-12-11 10c-12 2-24 3-35 6z" class="hair3"/>
+          <circle cx="38" cy="45" r="3.4" fill="#161616"/><circle cx="62" cy="45" r="3.4" fill="#161616"/>
+          <path d="M32 35c5-3 10-3 14 0M56 35c5-3 10-3 14 0" class="face"/>
+          <path d="M40 60c8 6 18 6 26-1" class="face"/>
+          <rect x="10" y="80" width="82" height="92" rx="26" class="cloth3"/>
+          <rect x="34" y="80" width="34" height="24" rx="6" fill="#fff" opacity=".85"/>
+        </g>
+        <!-- character C: person, light hair, green top -->
+        <g transform="translate(84 322)">
+          <circle cx="44" cy="37" r="28" class="skin4"/>
+          <path d="M14 40c2-27 21-41 45-38 18 3 27 17 25 36-9-3-18-4-27-3l-2-11-10 9c-11 2-21 4-31 7z" class="hair5"/>
+          <circle cx="34" cy="38" r="3.2" fill="#161616"/><circle cx="55" cy="38" r="3.2" fill="#161616"/>
+          <path d="M28 29c5-3 10-3 13 0M49 29c5-3 10-3 13 0" class="face"/>
+          <path d="M36 53c6 5 15 6 22 0" class="face"/>
+          <rect x="8" y="68" width="74" height="82" rx="24" class="cloth4"/>
+          <circle cx="45" cy="96" r="9" fill="#FFD633"/>
+        </g>
+        <!-- character D: person, slate top, small, back row -->
+        <g transform="translate(178 224)" opacity=".95">
+          <circle cx="36" cy="30" r="23" class="skin2"/>
+          <path d="M13 33c1-22 17-33 36-31 15 2 22 13 20 29-8-3-16-4-24-3l-2-9-8 7c-8 2-15 4-22 7z" class="hair2"/>
+          <circle cx="28" cy="31" r="2.7" fill="#161616"/><circle cx="45" cy="31" r="2.7" fill="#161616"/>
+          <path d="M30 43c5 4 12 4 17 0" class="face"/>
+          <rect x="6" y="56" width="60" height="66" rx="20" class="cloth5"/>
+        </g>
+        <text x="20" y="452" class="artLabel">team avatar cluster &middot; flat vector people &middot; one shared list, many views</text>
+        <text x="20" y="474" class="artLabel">grid &middot; timeline &middot; form &middot; dashboard</text>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<!-- ============ LEARNING PATH RAIL ============ -->
+<section class="section">
+  <h2>Your learning path</h2>
+  <p class="lead">Six stages. Each one builds on the last, and each ends with a check so you know it landed before moving on.</p>
+  <div class="rail">
+    <div class="railItem"><span class="railDot">1</span><b>Understand</b><span>What a list is and is not</span></div>
+    <div class="railItem"><span class="railDot">2</span><b>Choose</b><span>List, Excel, or Planner</span></div>
+    <div class="railItem"><span class="railDot">3</span><b>Start</b><span>Templates and first build</span></div>
+    <div class="railItem"><span class="railDot">4</span><b>Collect</b><span>Modern forms, no permissions</span></div>
+    <div class="railItem"><span class="railDot">5</span><b>Show</b><span>Views, formatting, timeline</span></div>
+    <div class="railItem"><span class="railDot">6</span><b>Extend</b><span>Copilot and live dashboards</span></div>
+  </div>
+  <div class="note"><p><b>How to use this page.</b> Flashcards flip when you hover them, or when you tab to them with the keyboard. Sections with a <b>+</b> expand for the detail. Everything works offline &mdash; nothing on this page needs a connection.</p></div>
+</section>
+
+<!-- ============ 1. UNDERSTAND ============ -->
+<section class="section">
+  <h2><span class="stepno">1</span>Understand the core idea</h2>
+  <p class="lead">Before you build anything, get the mental model right. Almost every messy list comes from skipping this.</p>
+
+  <div class="grid cols3">
+    <div class="card"><div class="icon">&#9636;</div><h3>An item is one thing</h3><p>One row = one candidate, one issue, one campaign, one office, one policy document. If you cannot say what "one row" is in a single word, the list is not ready to build.</p></div>
+    <div class="card"><div class="icon">&#9776;</div><h3>A column is one fact</h3><p>Owner, status, due date, budget, market. Columns have <i>types</i> &mdash; and choosing the right type is what makes a list smart instead of just a table.</p></div>
+    <div class="card"><div class="icon">&#128065;</div><h3>A view is one audience</h3><p>The same data, filtered and formatted for different people. Operations get a working grid; leadership gets a summary; planners get a calendar or timeline.</p></div>
+  </div>
+
+  <div class="note"><p><b>Think of it as&hellip;</b> a spreadsheet that grew up. It remembers who changed what, it stops people typing "In progress", "in-progress" and "WIP" into the same field, it can tell someone when their item is due, and it can look completely different to different teams without anyone copying the data.</p></div>
+
+  <h3>Flip cards &mdash; the five words that matter</h3>
+  <div class="deck">
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Concept</span><h4>Item</h4><p>What is a single row in a list?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Item</span><p>One record of the thing you are tracking &mdash; one candidate, one issue, one event. Items hold values, attachments, comments and version history, and each one has its own form.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Concept</span><h4>Column type</h4><p>Why does the type matter so much?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Column type</span><p>The type decides what people can enter and what the list can do. Choice gives clean status values, Person links to the directory, Date enables calendar and timeline views, Number enables totals. Text columns can do none of this.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Concept</span><h4>View</h4><p>Does a new view copy the data?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">View</span><p>No. A view is a saved lens over the same single set of items &mdash; a filter, a sort, a grouping, a layout. Ten views, one truth. This is the main reason to use a list instead of ten spreadsheets.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Concept</span><h4>Rule</h4><p>What is a list rule for?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Rule</span><p>A simple if/then built into the list: when a column changes, when a new item is created, or when an item is deleted, notify someone. No Power Automate needed for the simple cases.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Concept</span><h4>Form</h4><p>Who can use a list form?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Form</span><p>Anyone you share the form link with &mdash; and they never see the underlying list. This is the single most useful thing most teams do not know lists can do. Stage 4 covers it properly.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Concept</span><h4>Formatting</h4><p>What does list formatting change?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Formatting</span><p>How the data <i>looks</i>, never the data itself. Colour by status, flag overdue dates, draw progress bars, or render the whole view as a timeline. It is JSON &mdash; and Copilot can write it for you.</p></div>
+    </div></div>
+  </div>
+  <div class="deckHint">Cards flip on hover and on keyboard focus. On a phone, tap a card to flip it. When you print this page, both sides are shown.</div>
+</section>
+
+<!-- ============ 2. CHOOSE ============ -->
+<section class="section">
+  <h2><span class="stepno">2</span>Decide if a list is the right tool</h2>
+  <p class="lead">Run this check before you create another spreadsheet, task board, or table inside a Word document.</p>
+  <div class="tableWrap">
+  <table>
+    <thead><tr><th>What you need</th><th>Use a SharePoint list when&hellip;</th><th>Use Excel when&hellip;</th><th>Use Planner / To Do when&hellip;</th></tr></thead>
+    <tbody>
+      <tr><td><b>Structured records</b></td><td>Every item has the same fields &mdash; owner, status, date, market, budget &mdash; and the set of items keeps growing.</td><td>You need formulas, modelling, pivots, or serious analysis of numbers.</td><td>You only need a simple task list with checkboxes.</td></tr>
+      <tr><td><b>Many editors</b></td><td>Several people update the same records and everyone must see one current version.</td><td>A small expert group edits one workbook with clear control of who touches what.</td><td>Work is mostly assigning and completing tasks.</td></tr>
+      <tr><td><b>Different audiences</b></td><td>You want grid, calendar, gallery, board and timeline views over the same data, each filtered for a different team.</td><td>You need spreadsheet layout, printing and calculation.</td><td>You want buckets, boards and due dates.</td></tr>
+      <tr><td><b>Collecting input</b></td><td>People outside the team should submit information <b>without</b> being given access to the data behind it.</td><td>Not a good fit &mdash; sharing a workbook shares everything in it.</td><td>Not designed for structured intake.</td></tr>
+      <tr><td><b>Nudges</b></td><td>You want "when status changes to Blocked, notify the owner" without building anything.</td><td>Notifications are not really part of the tool.</td><td>You want personal task reminders.</td></tr>
+      <tr><td><b>Reuse</b></td><td>The data should later feed a Teams tab, a Power BI report, a live HTML dashboard, or an approval flow.</td><td>The file is the destination.</td><td>The task is the destination.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="warn"><p><b>The honest rule of thumb.</b> If you find yourself emailing a spreadsheet around and merging versions by hand, you needed a list about three weeks ago.</p></div>
+</section>
+
+<!-- ============ 3. TEMPLATES ============ -->
+<section class="section">
+  <h2><span class="stepno">3</span>Start easily &mdash; with a list template</h2>
+  <p class="lead">You almost never need to start from a blank list. A template arrives with sensible columns, ready-made choice values, colour formatting and at least one useful view already built. Pick the closest one, then adjust.</p>
+
+  <div class="grid cols3">
+    <div class="card"><span class="tag">Template</span><h3>Issue tracker</h3><p>Track problems from raised to resolved, with priority, owner and status already coloured. Good for support queues and project risk logs.</p></div>
+    <div class="card"><span class="tag">Template</span><h3>Work progress tracker</h3><p>Milestones with owners, due dates and completion status. The natural starting point for a project tracker.</p></div>
+    <div class="card"><span class="tag">Template</span><h3>Event itinerary</h3><p>Sessions, times, locations and speakers &mdash; with a calendar view out of the box.</p></div>
+    <div class="card"><span class="tag">Template</span><h3>Recruitment tracker</h3><p>Candidates through the hiring stages, with interviewers, stage and next step.</p></div>
+    <div class="card"><span class="tag">Template</span><h3>Content scheduler</h3><p>Content ideas, owners, channels and publishing dates &mdash; a calendar view for the editorial plan.</p></div>
+    <div class="card"><span class="tag">Template</span><h3>Asset manager</h3><p>Equipment and assets, who has them, condition and return date.</p></div>
+  </div>
+
+  <h3 style="margin-block-start:26px">Four ways to start a list</h3>
+  <div class="grid cols4">
+    <div class="card"><span class="tag">Fastest</span><h3>From a template</h3><p>Columns, choices, colours and a view are already there. Rename it, adjust two or three columns, and you are working.</p></div>
+    <div class="card"><span class="tag">Migrating</span><h3>From Excel</h3><p>Upload a table and SharePoint proposes a column type for each spreadsheet column. <b>Always check the proposals</b> &mdash; it often suggests Text where you want Choice, Person or Date.</p></div>
+    <div class="card"><span class="tag">Scaling</span><h3>From an existing list</h3><p>Copies the structure, views and formatting of a list that already works &mdash; without copying its data. The best way to standardise across markets or offices.</p></div>
+    <div class="card"><span class="tag">Last resort</span><h3>Blank list</h3><p>Total freedom, and total responsibility for getting the columns right. Only choose this when nothing above is close.</p></div>
+  </div>
+
+  <div class="good"><p><b>Good practice.</b> Before creating anything, check whether a colleague has already built the list you need. "From an existing list" turns one good list into a repeatable standard &mdash; and stops the tenant filling up with eleven slightly different trackers.</p></div>
+
+  <h3 style="margin-block-start:26px">Flip cards &mdash; choosing your starting point</h3>
+  <div class="deck">
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Decide</span><h4>Template or blank?</h4><p>When is a blank list actually right?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Template or blank?</span><p>Only when no template is within reach of your process. A template that is 70% right is still faster than a blank list, because you can delete a column far quicker than you can design one.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Decide</span><h4>Where should it live?</h4><p>Lists app, Teams, or SharePoint site?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Where it lives</span><p>The site decides who can see it. Put a team's list on that team's SharePoint site, not in "My lists", so it survives people changing roles. You can still surface it as a tab in Teams.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Decide</span><h4>Importing from Excel</h4><p>What is the number-one mistake?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Importing from Excel</span><p>Accepting every suggested column type. A status column imported as Text will never colour, filter or group cleanly. Fix the types during import &mdash; it is much more painful afterwards.</p></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ============ 4. PEDAGOGICAL WORKFLOW: CREATE A LIST ============ -->
+<section class="section">
+  <h2><span class="stepno">4</span>Guided workflow: how to create a list</h2>
+  <p class="lead">Each step follows the same four beats &mdash; <b>Why</b> it matters, <b>When</b> you do it, <b>How</b> to do it, and a <b>Check</b> so you know it worked before moving on.</p>
+
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">01</span><h3>Sketch it before you click anything</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>Lists go wrong at the design stage, not the building stage. Five minutes on paper saves a rebuild.</p></div>
+      <div class="pedCell"><b>When</b><p>Before you open Lists at all.</p></div>
+      <div class="pedCell"><b>How</b><p>Write four lines: the decision this list supports, what one row is, the 5&ndash;8 facts you need per row, and the two views you will need.</p></div>
+      <div class="pedCell check"><b>Check</b><p>You can finish the sentence "one row in this list is one&hellip;" in a single word.</p></div>
+    </div>
+  </div>
+
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">02</span><h3>Open Lists and choose your start</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>Where you create it determines who can reach it later.</p></div>
+      <div class="pedCell"><b>When</b><p>Once you know which team owns the list.</p></div>
+      <div class="pedCell"><b>How</b><p>From the Microsoft 365 app launcher open <b>Lists</b>, or on the owning SharePoint site choose <b>New &rarr; List</b>. Then pick template, Excel, existing list, or blank.</p></div>
+      <div class="pedCell check"><b>Check</b><p>The "Save to" location shows the team's site &mdash; not your personal lists.</p></div>
+    </div>
+  </div>
+
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">03</span><h3>Name it so a stranger understands it</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>The name and description are how colleagues decide whether to use your list or create a duplicate.</p></div>
+      <div class="pedCell"><b>When</b><p>At creation &mdash; but you can refine it later.</p></div>
+      <div class="pedCell"><b>How</b><p>Use a plain, specific name. Add a one-line description saying what belongs in it and what does not. Pick a colour and icon so it is recognisable in the Lists app.</p></div>
+      <div class="pedCell check"><b>Check</b><p>Someone outside your team could read the name and description and correctly guess what one row is.</p></div>
+    </div>
+  </div>
+
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">04</span><h3>Shape the columns &mdash; the step that matters most</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>Column types decide what filtering, grouping, colouring, totals and timeline views become possible.</p></div>
+      <div class="pedCell"><b>When</b><p>Before anyone adds real data.</p></div>
+      <div class="pedCell"><b>How</b><p>Add each fact as a column with the right type: <b>Choice</b> for status, <b>Person</b> for owner, <b>Date</b> for milestones, <b>Number</b> or <b>Currency</b> for budget, <b>Yes/No</b> for flags, <b>Hyperlink</b> for references.</p></div>
+      <div class="pedCell check"><b>Check</b><p>No free-text column is being used for a value that only has a handful of valid answers.</p></div>
+    </div>
+  </div>
+
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">05</span><h3>Add the first real items</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>Real data exposes missing columns instantly. Imaginary data never does.</p></div>
+      <div class="pedCell"><b>When</b><p>As soon as the columns exist.</p></div>
+      <div class="pedCell"><b>How</b><p>Add five genuine records. Use <b>Edit in grid view</b> to type quickly, or the item form for one at a time. Attach related files to the item rather than emailing them.</p></div>
+      <div class="pedCell check"><b>Check</b><p>You could fill in every column for all five items without inventing a "Notes" dumping ground.</p></div>
+    </div>
+  </div>
+
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">06</span><h3>Create at least two views</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>One view can never serve both the people doing the work and the people reporting on it.</p></div>
+      <div class="pedCell"><b>When</b><p>Once real items exist to filter.</p></div>
+      <div class="pedCell"><b>How</b><p>Build an operational grid (filtered to open items, grouped by owner) and an audience view (calendar, gallery, board or timeline). Save each with a clear name.</p></div>
+      <div class="pedCell check"><b>Check</b><p>Switching views changes what you see &mdash; and changes nothing about the data.</p></div>
+    </div>
+  </div>
+
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">07</span><h3>Add a rule so the list nudges people</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>A list nobody looks at is just storage. A rule brings people back at the right moment.</p></div>
+      <div class="pedCell"><b>When</b><p>Once the status column is stable.</p></div>
+      <div class="pedCell"><b>How</b><p>Use <b>Automate &rarr; Rules &rarr; Create a rule</b> and pick a simple if/then: a column changes, a new item is created, or an item is assigned. Move to Power Automate only when you need multiple steps or approvals.</p></div>
+      <div class="pedCell check"><b>Check</b><p>Change a test item's status and the notification actually arrives.</p></div>
+    </div>
+  </div>
+
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">08</span><h3>Share it, and name an owner</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>An unowned list quietly rots &mdash; stale values, duplicate entries, nobody to ask.</p></div>
+      <div class="pedCell"><b>When</b><p>Before you announce it to anyone.</p></div>
+      <div class="pedCell"><b>How</b><p>Share through the site's normal permissions, add the list as a tab in the team's Teams channel, and write the owner's name into the list description.</p></div>
+      <div class="pedCell check"><b>Check</b><p>Someone who was not involved can find it, understand it, and knows who to ask.</p></div>
+    </div>
+  </div>
+
+  <div class="note"><p><b>Where people get stuck.</b> Steps 1 and 4. Everything else is recoverable in minutes; a wrong column type after 400 items is a weekend.</p></div>
+</section>
+
+<!-- ============ 5. MODERN LIST FORMS ============ -->
+<section class="section">
+  <h2><span class="stepno">5</span>Modern list forms &mdash; collect information without handing over the list</h2>
+  <p class="lead">This is the capability that changes how teams work. You can send someone a form link, they fill it in, the item lands in your list &mdash; and at no point do they get access to the list, the site, or anyone else's submissions.</p>
+
+  <div class="grid cols2">
+    <div class="card">
+      <span class="tag">The old way</span>
+      <h3>Give people access to the list</h3>
+      <p>To let someone submit information, you added them to the site. Which meant they could also see every other item, every other column, and everyone else's answers.</p>
+      <p>So teams used email instead &mdash; and someone re-typed the answers into a spreadsheet by hand.</p>
+    </div>
+    <div class="card" style="border-color:#BFE3D2;background:#F2FAF6">
+      <span class="tag" style="background:#E9F5EF;color:#2E7D5B">The modern way</span>
+      <h3>Share a form, not the list</h3>
+      <p>Create a form on the list, choose which columns appear on it, and share the link. Submissions flow straight into the list as new items.</p>
+      <p>Respondents see only the form. No site membership, no permission request, no visibility of other people's entries.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-block-start:26px">Guided workflow: publish a form on your list</h3>
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">A</span><h3>Create the form</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>The form is a controlled front door to the list.</p></div>
+      <div class="pedCell"><b>When</b><p>Once your columns are settled.</p></div>
+      <div class="pedCell"><b>How</b><p>On the list, choose <b>Forms &rarr; New form</b>, give it a name, and pick which columns respondents should fill in.</p></div>
+      <div class="pedCell check"><b>Check</b><p>The preview shows only the fields a respondent should ever see.</p></div>
+    </div>
+  </div>
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">B</span><h3>Hide the internal columns</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>Columns like internal status, reviewer notes or scoring must never appear on a submission form.</p></div>
+      <div class="pedCell"><b>When</b><p>Immediately after creating the form.</p></div>
+      <div class="pedCell"><b>How</b><p>Remove those fields from the form layout. They stay in the list and keep working for your team &mdash; they are simply not part of the form.</p></div>
+      <div class="pedCell check"><b>Check</b><p>Open the form link in a private browser window and confirm nothing internal is visible.</p></div>
+    </div>
+  </div>
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">C</span><h3>Share the link and test it end to end</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>A form that quietly fails is worse than no form.</p></div>
+      <div class="pedCell"><b>When</b><p>Before you send it to anyone real.</p></div>
+      <div class="pedCell"><b>How</b><p>Copy the form link into your email, Teams post or intranet page. Submit one test entry yourself and confirm it appears as a new item.</p></div>
+      <div class="pedCell check"><b>Check</b><p>The test item is in the list with every value in the right column &mdash; then delete it.</p></div>
+    </div>
+  </div>
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">D</span><h3>Route it with a rule</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>Submissions that nobody is told about sit unread.</p></div>
+      <div class="pedCell"><b>When</b><p>As soon as the form is live.</p></div>
+      <div class="pedCell"><b>How</b><p>Add a rule: <i>when a new item is created, notify the responsible person</i>. Add an approval step in Power Automate only if the process genuinely needs one.</p></div>
+      <div class="pedCell check"><b>Check</b><p>A test submission produces a notification to the right person.</p></div>
+    </div>
+  </div>
+
+  <div class="warn"><p><b>Check before you share widely.</b> How far a form link can travel &mdash; inside the team, across your organisation, or to external recipients &mdash; depends on your tenant's sharing settings and the site's configuration. Confirm the intended audience with your IT team before publishing a form to anyone outside your organisation.</p></div>
+
+  <h3 style="margin-block-start:26px">Flip cards &mdash; forms and permissions</h3>
+  <div class="deck">
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Check yourself</span><h4>Can respondents see the list?</h4><p>What does a form give access to?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer</span><p>Only the form and the fields you put on it. Filling in a form does not grant any permission to the list, the site, or other people's items.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Check yourself</span><h4>Form or Microsoft Forms?</h4><p>When would you use each?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer</span><p>Use a list form when the answers <i>are</i> the working data your team then tracks, updates and reports on. Use Microsoft Forms for surveys and quizzes, where you mostly want responses and summary charts.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Check yourself</span><h4>Where do submissions go?</h4><p>Is there a separate response store?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer</span><p>No. Each submission becomes a normal list item straight away &mdash; so views, formatting, rules, Teams tabs and dashboards all work on it immediately, with no export step.</p></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ============ 6. VIEWS, FORMATTING, TIMELINE ============ -->
+<section class="section">
+  <h2><span class="stepno">6</span>Views and formatting &mdash; including a project timeline</h2>
+  <p class="lead">Data that is technically present but visually flat does not get acted on. Views decide who sees what; formatting decides what their eye goes to first.</p>
+
+  <div class="grid cols3">
+    <div class="card"><div class="icon">&#9638;</div><h3>Grid</h3><p>The working view. Filter to open items, group by owner, and edit in place like a spreadsheet.</p></div>
+    <div class="card"><div class="icon">&#128197;</div><h3>Calendar</h3><p>Anything with a date column &mdash; events, deadlines, campaign go-lives &mdash; laid out by month.</p></div>
+    <div class="card"><div class="icon">&#9635;</div><h3>Gallery</h3><p>Card layout with images. Good for people, offices, assets and anything you browse rather than scan.</p></div>
+    <div class="card"><div class="icon">&#9776;</div><h3>Board</h3><p>Kanban columns driven by a Choice column. Drag an item to change its status.</p></div>
+    <div class="card"><div class="icon">&#9679;</div><h3>Conditional formatting</h3><p>Colour by status, flag items overdue, or highlight high priority &mdash; configured in the view, no code.</p></div>
+    <div class="card"><div class="icon">&#123;&#125;</div><h3>JSON view formatting</h3><p>For anything the menus cannot do &mdash; progress bars, hover cards, custom layouts, and full timelines.</p></div>
+  </div>
+
+  <h3 style="margin-block-start:28px">Turning a list into a project timeline</h3>
+  <p>A project tracker becomes far more useful when the milestones are laid out along a line instead of stacked in rows. The community <b>PnP List Formatting</b> repository publishes a ready-made view format for exactly this &mdash; the <b>Key Dates Timeline</b> sample, described by its authors as a horizontal timeline view for key dates and milestones that shows status badges and milestone titles with hover cards containing descriptions and "Learn more" links. A checklist variant of the same sample is also published in the repository.</p>
+
+  <div class="tl">
+    <div class="tlTrack">
+      <div class="tlLine"></div>
+      <div class="tlRow">
+        <div class="tlNode"><div class="tlDot done"></div><div class="tlCard"><b>Kick-off</b><span>Scope and owners agreed</span><br><span class="tlBadge b-done">Complete</span></div></div>
+        <div class="tlNode"><div class="tlDot done"></div><div class="tlCard"><b>Supplier shortlist</b><span>Options screened</span><br><span class="tlBadge b-done">Complete</span></div></div>
+        <div class="tlNode"><div class="tlDot now"></div><div class="tlCard"><b>Pilot phase</b><span>Rollout to first team</span><br><span class="tlBadge b-now">In progress</span></div></div>
+        <div class="tlNode"><div class="tlDot late"></div><div class="tlCard"><b>Client report</b><span>Draft with the client</span><br><span class="tlBadge b-late">Overdue</span></div></div>
+        <div class="tlNode"><div class="tlDot next"></div><div class="tlCard"><b>Close-out</b><span>Hand over and archive</span><br><span class="tlBadge b-next">Not started</span></div></div>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--muted);font-style:italic;margin-block-start:4px">Illustration of the pattern &mdash; milestone, date, status badge &mdash; drawn here in the palette used throughout this guide. The live version is produced by applying the sample's view formatting JSON to your own list.</p>
+
+  <h3 style="margin-block-start:24px">Guided workflow: apply a timeline view</h3>
+  <div class="ped">
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>A timeline answers "are we on track?" in one glance, which a grid never does.</p></div>
+      <div class="pedCell"><b>When</b><p>Once your list has a Date column and a Choice status column with stable values.</p></div>
+      <div class="pedCell"><b>How</b><p>Open the sample in the PnP List Formatting repository, copy its JSON, then in your list choose the view dropdown &rarr; <b>Format current view</b> &rarr; <b>Advanced mode</b>, paste it, and rename the internal column names in the JSON to match your own.</p></div>
+      <div class="pedCell check"><b>Check</b><p>Every milestone appears on the line with the correct status badge &mdash; and nothing shows as blank, which usually means a column name in the JSON does not match yours.</p></div>
+    </div>
+  </div>
+  <div class="note"><p><b>Sample:</b> Key Dates Timeline (and the Key Dates Timeline Checklist variant) &mdash; <a href="https://github.com/pnp/List-Formatting/tree/master/view-samples/key-dates-timeline-checklist">github.com/pnp/List-Formatting &rarr; view-samples &rarr; key-dates-timeline-checklist</a>. Community samples, provided as-is; test on a copy of your list before applying to a live one.</p></div>
+
+  <h3 style="margin-block-start:26px">Flip cards &mdash; views and formatting</h3>
+  <div class="deck">
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Check yourself</span><h4>Does formatting change data?</h4><p>What exactly does a format touch?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer</span><p>Only the appearance of the view. Values, history and permissions are untouched &mdash; which is why formatting is safe to experiment with.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Check yourself</span><h4>Column vs view formatting</h4><p>What is the difference?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer</span><p>Column formatting styles one field in every row &mdash; a coloured status pill. View formatting restyles the whole row or the entire view &mdash; cards, boards, timelines.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Check yourself</span><h4>My timeline is blank</h4><p>What is nearly always the cause?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer</span><p>The JSON references column names that do not exist in your list. Sample JSON uses the sample's internal names &mdash; swap in yours, and remember the internal name can differ from the display name.</p></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ============ 7. USE CASES ============ -->
+<section class="section">
+  <h2><span class="stepno">7</span>Use cases: where lists earn their keep</h2>
+  <p class="lead">These are the patterns teams reach for most often. Each one names what a single row represents &mdash; the question worth settling before you build anything &mdash; so you can adapt it to your own process.</p>
+
+  <div class="grid cols2">
+    <div class="card case"><div class="avatar">P</div><div>
+      <span class="realTag">Common pattern</span>
+      <h3>Project &amp; milestone tracker</h3>
+      <p><b>One row is:</b> one milestone or deliverable.</p>
+      <p><b>Columns:</b> Milestone, Owner (Person), Due date (Date), Status (Choice), Workstream, Notes.</p>
+      <p><b>Views:</b> operational grid grouped by owner, plus the Key Dates Timeline view for the steering group.</p>
+      <p><b>Start from:</b> the Work progress tracker template.</p>
+    </div></div>
+
+    <div class="card case"><div class="avatar">R</div><div>
+      <span class="realTag">Common pattern</span>
+      <h3>Recruitment tracker</h3>
+      <p><b>One row is:</b> one candidate.</p>
+      <p><b>Columns:</b> Candidate, Role, Stage (Choice), Interviewers (Person), Next step, Next date.</p>
+      <p><b>Why a list:</b> several interviewers update the same record, and the hiring manager needs a board view by stage while HR needs a grid.</p>
+      <p><b>Start from:</b> the Recruitment tracker template.</p>
+    </div></div>
+
+    <div class="card case"><div class="avatar">C</div><div>
+      <span class="realTag">Common pattern</span>
+      <h3>Content planner</h3>
+      <p><b>One row is:</b> one piece of content.</p>
+      <p><b>Columns:</b> Title, Owner, Channel (Choice), Publish date (Date), Production status (Choice).</p>
+      <p><b>Views:</b> calendar for the editorial plan; grid filtered to "not yet published" for the weekly stand-up.</p>
+      <p><b>Start from:</b> the Content scheduler template.</p>
+    </div></div>
+
+    <div class="card case"><div class="avatar">E</div><div>
+      <span class="realTag">Common pattern</span>
+      <h3>Event itinerary &amp; registrations</h3>
+      <p><b>One row is:</b> one session &mdash; or, on a second list, one registrant.</p>
+      <p><b>The form matters here:</b> registrants submit through a form and never see the attendee list. Exactly the pattern in stage 5.</p>
+      <p><b>Views:</b> calendar for the programme, grid for the events team.</p>
+      <p><b>Start from:</b> the Event itinerary template.</p>
+    </div></div>
+
+    <div class="card case"><div class="avatar">O</div><div>
+      <span class="realTag">Common pattern</span>
+      <h3>New manager onboarding</h3>
+      <p><b>One row is:</b> one onboarding session in a new manager's first weeks.</p>
+      <p><b>Why a list:</b> HR schedules it, managers follow it, and the same structure repeats for every new joiner &mdash; the definition of a list-shaped problem.</p>
+      <p><b>Views:</b> calendar by week; grid grouped by owner.</p>
+    </div></div>
+
+    <div class="card case"><div class="avatar">D</div><div>
+      <span class="realTag">Common pattern</span>
+      <h3>Policy document register</h3>
+      <p><b>One row is:</b> one policy, guideline or instruction.</p>
+      <p><b>Columns:</b> Document, Hierarchy, Owner (Person), Status (Choice), Link (Hyperlink), Review date (Date).</p>
+      <p><b>Why a list, not a library:</b> you are tracking <i>facts about</i> documents &mdash; ownership, status, review dates &mdash; which is metadata, not storage.</p>
+    </div></div>
+
+    <div class="card case"><div class="avatar">B</div><div>
+      <span class="realTag">Common pattern</span>
+      <h3>Sales opportunity pipeline</h3>
+      <p><b>One row is:</b> one opportunity or lead.</p>
+      <p><b>Why a list:</b> the team builds a shared pipeline that survives people moving roles, instead of a spreadsheet on one laptop.</p>
+      <p><b>Watch:</b> agree the Choice values for stage up front, or every team invents its own.</p>
+    </div></div>
+
+    <div class="card case"><div class="avatar">L</div><div>
+      <span class="realTag">Common pattern</span>
+      <h3>Lifecycle review candidates</h3>
+      <p><b>One row is:</b> one file or folder proposed for archiving.</p>
+      <p><b>Why a list:</b> an analysis produces the candidates, owners record a decision against each one, and the audit trail is kept &mdash; a review workflow, not a report.</p>
+      <p><b>Bonus:</b> this list is what a live HTML dashboard reads from. See stage 8.</p>
+    </div></div>
+  </div>
+
+  <div class="note"><p><b>Spotting your own use case.</b> If the same information is being emailed round, re-typed into a spreadsheet, or kept in a table inside a Word document &mdash; and more than two people touch it &mdash; it is a list.</p></div>
+
+  <div style="margin-block-start:22px">
+    <svg viewBox="0 0 900 210" role="img" aria-label="Illustrated colleagues in three locations working from one shared list" style="width:100%;height:auto">
+      <rect x="0" y="0" width="900" height="210" rx="22" fill="#F5F8FB"/>
+      <g transform="translate(60 44)">
+        <circle cx="40" cy="34" r="26" class="skin3"/>
+        <path d="M12 37c1-25 20-38 42-35 17 2 25 15 23 33-9-4-19-5-29-4l-2-10-9 8c-9 2-17 4-25 8z" class="hair1"/>
+        <circle cx="31" cy="35" r="3" fill="#161616"/><circle cx="50" cy="35" r="3" fill="#161616"/>
+        <path d="M32 48c6 5 14 5 20 0" class="face"/>
+        <rect x="6" y="64" width="70" height="76" rx="22" class="cloth1"/>
+        <text x="6" y="162" class="artLabel">Head office</text>
+      </g>
+      <g transform="translate(390 44)">
+        <circle cx="40" cy="34" r="26" class="skin1"/>
+        <path d="M12 37c1-25 20-38 42-35 17 2 25 15 23 33-9-4-19-5-29-4l-2-10-9 8c-9 2-17 4-25 8z" class="hair3"/>
+        <circle cx="31" cy="35" r="3" fill="#161616"/><circle cx="50" cy="35" r="3" fill="#161616"/>
+        <path d="M32 48c6 5 14 5 20 0" class="face"/>
+        <rect x="6" y="64" width="70" height="76" rx="22" class="cloth3"/>
+        <text x="6" y="162" class="artLabel">Regional team</text>
+      </g>
+      <g transform="translate(730 44)">
+        <circle cx="40" cy="34" r="26" class="skin4"/>
+        <path d="M12 37c1-25 20-38 42-35 17 2 25 15 23 33-9-4-19-5-29-4l-2-10-9 8c-9 2-17 4-25 8z" class="hair5"/>
+        <circle cx="31" cy="35" r="3" fill="#161616"/><circle cx="50" cy="35" r="3" fill="#161616"/>
+        <path d="M32 48c6 5 14 5 20 0" class="face"/>
+        <rect x="6" y="64" width="70" height="76" rx="22" class="cloth4"/>
+        <text x="6" y="162" class="artLabel">Client team</text>
+      </g>
+      <rect x="200" y="72" width="150" height="60" rx="14" fill="#fff" stroke="#D7E2EC"/>
+      <rect x="214" y="86" width="86" height="9" rx="4.5" fill="#CAD8E5"/>
+      <rect x="214" y="104" width="120" height="9" rx="4.5" fill="#D7E2EC"/>
+      <rect x="540" y="72" width="150" height="60" rx="14" fill="#fff" stroke="#D7E2EC"/>
+      <rect x="554" y="86" width="104" height="9" rx="4.5" fill="#FFD633"/>
+      <rect x="554" y="104" width="120" height="9" rx="4.5" fill="#D7E2EC"/>
+      <path d="M150 102h48M356 102h178M696 102h28" stroke="#7D9AB2" stroke-width="3" stroke-dasharray="7 7" fill="none"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+<section class="section">
+  <h2>Check your understanding</h2>
+  <p class="lead">Six questions covering the whole path. Flip each card only after you have answered it in your head.</p>
+  <div class="deck">
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Question 1</span><h4>Excel or a list?</h4><p>Four colleagues update the same sales pipeline every week. Which tool?</p><span class="flipHint">Answer first, then flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer 1</span><p>A list. Multiple editors, repeating structure, one version of the truth, and different views for the working team and leadership. Excel wins only when the work is calculation and modelling.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Question 2</span><h4>The status column</h4><p>You need Not started / In progress / Blocked / Done. Which column type?</p><span class="flipHint">Answer first, then flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer 2</span><p>Choice. It keeps the values clean, and it is what board views, grouping, colour formatting and rules all depend on. Text would look identical on day one and be unusable by month three.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Question 3</span><h4>External submissions</h4><p>Partners must submit details, but must not see each other's. What do you build?</p><span class="flipHint">Answer first, then flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer 3</span><p>A form on the list, with only the submission columns on it. No site access is granted, and each submission simply becomes a new item. Confirm the external sharing settings with IT first.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Question 4</span><h4>Two audiences</h4><p>Operations want every open item; the steering group want milestones only. How many lists?</p><span class="flipHint">Answer first, then flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer 4</span><p>One list, two views. Duplicating the list is the single most common mistake &mdash; it creates two versions of the truth that immediately start to drift.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Question 5</span><h4>Standardising</h4><p>Three markets should track opportunities the same way. What is the fastest route?</p><span class="flipHint">Answer first, then flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer 5</span><p>Build one good list, then create the others "from an existing list". Structure, views and formatting carry across; the data does not. Agree the Choice values once, centrally.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Question 6</span><h4>Ready to launch?</h4><p>What must be true before you announce a list to colleagues?</p><span class="flipHint">Answer first, then flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer 6</span><p>It sits on the owning team's site, has a named owner in the description, has real items in it, has at least two views, and at least one rule so it nudges people. Anything less and it becomes an abandoned list.</p></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section">
+  <h2>Frequently asked questions</h2>
+  <p class="lead">The questions that come up most often once teams start building lists.</p>
+
+  <details><summary>When should I use a list instead of a document library?</summary><div class="body">
+    <p>Use a <b>library</b> when the file <i>is</i> the thing &mdash; proposals, reports, templates. Use a <b>list</b> when you are tracking facts and the files are secondary; you can still attach files to a list item. A register of documents &mdash; with owners, status and review dates &mdash; is a list, even though it is about documents.</p>
+  </div></details>
+
+  <details><summary>How many items can a list hold?</summary><div class="body">
+    <p>Far more than most teams will ever add, but large lists behave better when views are filtered and indexed rather than showing everything at once. If you are planning something very large, talk to whoever administers your tenant before you build it.</p>
+  </div></details>
+
+  <details><summary>Can I use a list inside Microsoft Teams?</summary><div class="body">
+    <p>Yes &mdash; add it as a tab in the relevant channel. The list still lives on the SharePoint site behind the team, so permissions and views stay exactly the same. This is usually the single best way to get people to actually use it.</p>
+  </div></details>
+
+  <details><summary>Someone typed the wrong value into every row. Can I fix it?</summary><div class="body">
+    <p>Yes. Use <b>Edit in grid view</b> to correct values quickly, and version history on an item to see what it was before. Then fix the root cause: change that column from Text to Choice so the wrong value can no longer be typed.</p>
+  </div></details>
+
+  <details><summary>Do I need Power Automate?</summary><div class="body">
+    <p>Not for the simple cases. Built-in rules cover "when this changes, tell that person". Move to Power Automate when you need multiple steps, approvals, conditions, or a connection to another system.</p>
+  </div></details>
+
+  <details><summary>Can I report on list data?</summary><div class="body">
+    <p>Yes &mdash; and this is where lists become genuinely powerful. Views and formatting cover most day-to-day reporting; beyond that, list data can drive a live-linked HTML dashboard or a Power BI report. Stage 8 covers the dashboard route.</p>
+  </div></details>
+
+  <details><summary>Who should own a list?</summary><div class="body">
+    <p>A named person on the team that uses it &mdash; not IT. The owner decides the columns and the allowed values, keeps the description current, and retires the list when the work ends. Write their name in the list description.</p>
+  </div></details>
+
+  <details><summary>What if a list already exists for what I need?</summary><div class="body">
+    <p>Use it, or create yours "from an existing list" so the structure matches. Duplicate trackers are the main reason people stop trusting any of them. Search the site first, and ask in the Copilot in SharePoint community if you are not sure.</p>
+  </div></details>
+</section>
+
+<!-- ============ 8. TAKE YOUR LISTS FURTHER ============ -->
+<section class="section cta">
+  <h2><span class="stepno">8</span>Take your lists further&hellip;</h2>
+  <p class="lead">You now have a working list. This is where it stops being a table and starts being a product your colleagues actually enjoy using &mdash; with Copilot in SharePoint doing the heavy lifting.</p>
+
+  <div class="grid cols3">
+    <div class="card">
+      <div class="icon">&#10022;</div>
+      <h3>Make your lists beautiful</h3>
+      <p>Use <b>Copilot in SharePoint</b> to write the formatting for you. Describe what you want &mdash; "colour the status column, red when blocked", "show a progress bar for percent complete", "lay the milestones out as a timeline" &mdash; and let it produce the formatting JSON.</p>
+      <p>Then paste it into <b>Format current view &rarr; Advanced mode</b>, check the column names match yours, and save.</p>
+      <p><b>Why it matters:</b> good formatting is what turns a list people <i>have to</i> open into a list people <i>want to</i> open.</p>
+    </div>
+
+    <div class="card">
+      <div class="icon">&#9636;</div>
+      <h3>Build live-linked HTML dashboards</h3>
+      <p>Your list can host its own app. Instead of exporting to a spreadsheet each month, build an HTML dashboard that reads the list live &mdash; KPIs, charts, filters and tables that refresh with the data.</p>
+      <p>The list stays the source; the dashboard reads from it. Ask Copilot to generate the page, then publish it to a document library on the same site so permissions follow the data.</p>
+      <p><b>Why it matters:</b> the list stays the single source of truth, and the dashboard is just a view of it &mdash; never a copy that goes stale.</p>
+    </div>
+
+    <div class="card">
+      <div class="icon">&#127891;</div>
+      <h3>Keep learning</h3>
+      <p>Set up one place where your organisation collects the practical material &mdash; use cases, prompts, worked examples and step-by-step guidance for getting more out of SharePoint and Copilot.</p>
+      <p>A single library of worked dashboard examples, plus a few learning lists for self-paced practice, does more for adoption than any one-off training session.</p>
+      <p><b>Why it matters:</b> everything on this page is a starting point. Somewhere to go next is what makes it stick.</p>
+    </div>
+  </div>
+
+  <div class="grid cols3" style="margin-block-start:18px">
+    <div class="card"><h3>Your next 20 minutes</h3><p>1. Pick one spreadsheet your team emails around.<br>2. Rebuild it from the closest list template.<br>3. Add one rule and two views.<br>4. Put it in your Teams channel as a tab.</p></div>
+    <div class="card"><h3>Your next week</h3><p>Add a form so people submit into it instead of emailing you. Then apply the Key Dates Timeline formatting and show it in your next team meeting.</p></div>
+    <div class="card"><h3>Your next month</h3><p>Ask Copilot to build a live dashboard over the list, and publish it where the team can reach it &mdash; so they can see the numbers without asking you.</p></div>
+  </div>
+</section>
+
+<!-- ============ SOURCES ============ -->
+<section class="section sources">
+  <p><b>About this guide.</b> A self-contained learning experience for Microsoft Lists in SharePoint, written for colleagues with no technical background. It covers the concepts, a guided build workflow, modern list forms, views and formatting, common use-case patterns, and where to take a list next.</p>
+  <p>The timeline pattern in stage 6 refers to the community <i>Key Dates Timeline</i> view sample published in the PnP List-Formatting repository, which is provided as-is &mdash; test any community formatting on a copy of your list before applying it to a live one.</p>
+  <p><b>Before you publish a form externally</b> or build a very large list, confirm the settings with whoever administers your Microsoft 365 tenant. Sharing behaviour and list limits vary between organisations.</p>
+</section>
+
+<div class="footer">MICROSOFT LISTS &middot; A BEGIN-TO-END LEARNING EXPERIENCE</div>
+</div>
+</body>
+</html>

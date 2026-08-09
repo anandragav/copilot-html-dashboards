@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Copilot HTML Dashboards — Inspiration Gallery</title>
+<style>
+:root{
+--navy:#03274A;--blue:#164C80;--slate:#7D9AB2;--pale:#CAD8E5;--yellow:#FFD633;
+--black:#161616;--muted:#5A5A57;--ice:#F5F8FB;--line:#D7E2EC;--warm:#F7F5F3;
+--green:#2E7D5B;--pink:#C85C8E;--orange:#D9822B;
+}
+*{box-sizing:border-box}
+html{font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;font-size:16px;scroll-behavior:smooth}
+body{margin:0;color:var(--black);line-height:1.55;background:linear-gradient(180deg,#F7FBFF 0%,#FFFFFF 42%,#F7FBFF 100%)}
+a{color:var(--blue);font-weight:700}
+.wrap{max-inline-size:1220px;margin-inline:auto;padding:24px}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;background:var(--navy);color:#fff;border-radius:28px;padding:36px;box-shadow:0 22px 55px rgba(3,39,74,.18)}
+.heroGrid{display:grid;grid-template-columns:1.05fr .95fr;gap:26px;align-items:center}
+.kicker{color:var(--yellow);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:13px}
+.hero h1{font-size:clamp(34px,5.4vw,64px);line-height:.98;margin:12px 0;letter-spacing:-.04em}
+.hero p.lede{font-size:19px;line-height:1.45;color:#DCE8F3;max-inline-size:640px;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-block-start:22px}
+.chip{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:9px 14px;color:#fff;font-weight:700;font-size:14px}
+.short{background:#fff;color:var(--navy);border-radius:20px;padding:20px;margin-block-start:22px;border-left:8px solid var(--yellow)}
+.short b{display:block;font-size:17px;margin-block-end:6px}
+.illus{inline-size:100%;height:auto;display:block}
+
+/* ---------- sections ---------- */
+.section{margin-block-start:26px;background:#fff;border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 12px 35px rgba(3,39,74,.07)}
+.section h2{color:var(--navy);font-size:30px;margin:0 0 6px;letter-spacing:-.03em}
+.section .lead{color:var(--muted);font-size:17px;margin:0 0 20px}
+.section h3{color:var(--navy)}
+.stepno{display:inline-grid;place-items:center;inline-size:38px;block-size:38px;border-radius:12px;background:var(--yellow);color:var(--navy);font-weight:900;margin-inline-end:12px;vertical-align:middle;font-size:16px}
+hr.div{border:none;border-top:1px solid var(--line);margin-block:32px}
+
+/* ---------- learning rail ---------- */
+.rail{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-block-start:18px}
+.railItem{background:var(--ice);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center}
+.railItem b{display:block;color:var(--navy);font-size:14px;margin-block-end:4px}
+.railItem span{font-size:12px;color:var(--muted)}
+.railDot{display:inline-grid;place-items:center;inline-size:28px;block-size:28px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;font-size:13px;margin-block-end:8px}
+
+/* ---------- grids & cards ---------- */
+.grid{display:grid;gap:16px}
+.cols2{grid-template-columns:repeat(2,1fr)}
+.cols3{grid-template-columns:repeat(3,1fr)}
+.cols4{grid-template-columns:repeat(4,1fr)}
+.card{border:1px solid var(--line);border-radius:20px;padding:18px;background:#fff;box-shadow:0 8px 24px rgba(3,39,74,.06)}
+.card h3{margin:8px 0;font-size:19px}
+.card p,.card li{color:#333;line-height:1.45}
+.card .tag{display:inline-block;background:#EAF2FA;color:var(--blue);border-radius:999px;padding:4px 10px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;margin-block-end:8px}
+.icon{inline-size:44px;block-size:44px;border-radius:16px;background:#EAF2FA;display:grid;place-items:center;color:var(--blue);font-weight:900;font-size:20px}
+.pill{display:inline-block;background:#EAF2FA;color:var(--blue);border:1px solid var(--pale);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;margin:0 6px 6px 0}
+.pillrow{display:flex;flex-wrap:wrap;margin-block-start:10px}
+
+/* ---------- callouts ---------- */
+.note{background:#EAF2FA;border-left:5px solid var(--blue);border-radius:6px;padding:14px 18px;margin-block:18px}
+.warn{background:#FFF9E6;border-left:5px solid var(--yellow);border-radius:6px;padding:14px 18px;margin-block:18px}
+.good{background:#E9F5EF;border-left:5px solid var(--green);border-radius:6px;padding:14px 18px;margin-block:18px}
+.note p,.warn p,.good p{margin:0}
+
+/* ---------- pedagogy blocks ---------- */
+.ped{background:var(--ice);border:1px solid var(--line);border-radius:22px;padding:20px;margin-block-end:16px}
+.pedHead{display:flex;align-items:center;gap:12px;margin-block-end:12px}
+.pedHead h3{margin:0;font-size:21px}
+.pedGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pedCell{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+.pedCell b{display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--blue);margin-block-end:6px}
+.pedCell.check{border-color:#BFE3D2;background:#F2FAF6}
+.pedCell.check b{color:var(--green)}
+.pedCell p{margin:0;font-size:14px;line-height:1.45}
+
+/* ---------- flashcards (CSS-only animated flip) ---------- */
+.deck{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-block-start:18px}
+.flip{background:transparent;perspective:1200px;border:0;padding:0;min-block-size:200px;cursor:pointer;display:block;inline-size:100%;font:inherit;text-align:start}
+.flipInner{position:relative;inline-size:100%;block-size:100%;min-block-size:200px;transition:transform .65s cubic-bezier(.22,.68,.35,1.02);transform-style:preserve-3d}
+.flip:hover .flipInner,.flip:focus .flipInner,.flip:focus-within .flipInner{transform:rotateY(180deg)}
+.flipFace{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:18px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);box-shadow:0 10px 26px rgba(3,39,74,.08)}
+.flipFront{background:#fff}
+.flipBack{background:var(--navy);color:#fff;transform:rotateY(180deg);border-color:var(--navy)}
+.flipBack p{color:#DCE8F3;margin:0;font-size:14.5px;line-height:1.5}
+.flipFront h4{margin:10px 0 6px;color:var(--navy);font-size:18px}
+.flipFront p{margin:0;font-size:14px;color:var(--muted)}
+.flipTag{font-size:11px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:var(--blue)}
+.flipBack .flipTag{color:var(--yellow)}
+.flipHint{font-size:11.5px;color:var(--slate);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.deckHint{background:var(--warm);border:1px dashed var(--pale);border-radius:14px;padding:10px 14px;font-size:13.5px;color:var(--muted);margin-block-start:14px}
+
+/* ---------- accordion ---------- */
+details{border:1px solid var(--line);border-radius:16px;padding:0;margin-block-end:12px;background:#fff;overflow:hidden}
+details summary{cursor:pointer;padding:15px 18px;font-weight:800;color:var(--navy);list-style:none;background:var(--ice)}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";float:right;font-weight:900;color:var(--blue)}
+details[open] summary::after{content:"\2212"}
+details .body{padding:16px 18px;border-top:1px solid var(--line)}
+details .body p:first-child{margin-block-start:0}
+
+/* ---------- table ---------- */
+.tableWrap{overflow:auto;border:1px solid var(--line);border-radius:18px;margin-block-start:16px}
+table{border-collapse:collapse;inline-size:100%;min-inline-size:760px;background:#fff}
+th{background:var(--navy);color:#fff;text-align:start;padding:13px;font-size:14px}
+td{border-top:1px solid var(--line);padding:13px;vertical-align:top;font-size:14.5px;line-height:1.4}
+tr:nth-child(even) td{background:#F8FBFD}
+
+/* ---------- use cases ---------- */
+.case{display:flex;gap:14px;align-items:flex-start}
+.avatar{flex:0 0 46px;inline-size:46px;block-size:46px;border-radius:50%;background:var(--pale);display:grid;place-items:center;font-weight:900;color:var(--navy)}
+.case h3{margin:0 0 6px;font-size:18px}
+.case p{margin:0 0 6px;font-size:14px}
+.realTag{display:inline-block;background:#E9F5EF;color:var(--green);border-radius:999px;padding:3px 9px;font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+
+/* ---------- CTA ---------- */
+.cta{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border-color:var(--navy)}
+.cta h2,.cta h3{color:#fff}
+.cta .lead{color:#DCE8F3}
+.cta .card{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.20);color:#fff;box-shadow:none}
+.cta .card p,.cta .card li{color:#EAF2FA}
+.cta .card a{color:var(--yellow)}
+.cta .icon{background:rgba(255,255,255,.14);color:var(--yellow)}
+
+.sources{font-size:13px;color:var(--muted)}
+.sources b{color:var(--navy)}
+.footer{padding:24px;color:var(--muted);font-weight:800;text-align:center;letter-spacing:.06em}
+
+/* ---------- flat vector art tokens ---------- */
+.artLabel{font-size:11px;letter-spacing:.08em;text-transform:uppercase;fill:#8FA9C0;font-weight:800}
+.face{stroke:#3F2A1D;stroke-width:2;stroke-linecap:round;fill:none}
+.hair1{fill:#2B1B12}.hair2{fill:#3D2418}.hair3{fill:#111}.hair4{fill:#6B4423}.hair5{fill:#C99A57}
+.skin1{fill:#8D5524}.skin2{fill:#C68642}.skin3{fill:#F1C27D}.skin4{fill:#E0AC69}.skin5{fill:#5C3A21}
+.cloth1{fill:#164C80}.cloth2{fill:#FFD633}.cloth3{fill:#C85C8E}.cloth4{fill:#2E7D5B}.cloth5{fill:#7D9AB2}.cloth6{fill:#D9822B}
+
+@media(max-width:980px){
+.heroGrid,.cols2,.cols3,.cols4,.deck,.pedGrid,.rail{grid-template-columns:1fr}
+.hero{padding:24px}.section{padding:20px}.wrap{padding:14px}
+.hero h1{font-size:34px}
+}
+@media print{
+body{background:#fff}
+.hero,.cta{background:#fff!important;color:#000!important;box-shadow:none}
+.hero h1,.hero p.lede,.cta h2,.cta h3,.cta .lead,.cta .card p{color:#000!important}
+.section{box-shadow:none;break-inside:avoid}
+.flipInner{transform:none!important}
+.flipBack{position:static;transform:none;background:#fff;color:#000;border-top:0}
+.flipFace{position:static;box-shadow:none}
+.flip,.flipInner{min-block-size:0}
+details{break-inside:avoid}
+details .body{display:block}
+}
+@media (prefers-reduced-motion: reduce){.flipInner{transition:none}}
+@media (prefers-color-scheme: dark){:root{color-scheme:light}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="heroGrid">
+    <div>
+      <p class="kicker">Microsoft 365 &middot; Copilot &middot; Inspiration gallery</p>
+      <h1>Copilot HTML Dashboards</h1>
+      <p class="lede">A growing collection of self-contained, interactive HTML pages built with Microsoft Copilot, Copilot Cowork, and Copilot in SharePoint. Use them as inspiration, starting points, or ready-to-adapt patterns for your own work.</p>
+      <div class="chips">
+        <span class="chip">Self-contained HTML</span>
+        <span class="chip">No build step</span>
+        <span class="chip">Works offline</span>
+        <span class="chip">GitHub Pages ready</span>
+      </div>
+      <div class="short">
+        <b>The one-sentence version</b>
+        Single-file HTML dashboards that look polished, run in any browser, and can be generated or refined with Copilot — perfect for learning experiences, status views, and SharePoint-friendly delivery.
+      </div>
+    </div>
+    <div>
+      <svg class="illus" viewBox="0 0 660 500" role="img" aria-label="Illustrated team collaborating around interactive HTML dashboards on screen">
+        <rect x="14" y="34" width="440" height="320" rx="28" fill="#ffffff" opacity=".97"/>
+        <rect x="44" y="70" width="380" height="34" rx="11" fill="#CAD8E5"/>
+        <circle cx="62" cy="87" r="7" fill="#164C80"/>
+        <rect x="80" y="81" width="150" height="12" rx="6" fill="#7D9AB2"/>
+        <rect x="44" y="124" width="104" height="30" rx="9" fill="#FFD633"/>
+        <rect x="158" y="124" width="104" height="30" rx="9" fill="#EAF2FA"/>
+        <rect x="272" y="124" width="104" height="30" rx="9" fill="#EAF2FA"/>
+        <g fill="#D7E2EC">
+          <rect x="44" y="176" width="300" height="13" rx="6.5"/>
+          <rect x="44" y="212" width="336" height="13" rx="6.5"/>
+          <rect x="44" y="248" width="268" height="13" rx="6.5"/>
+          <rect x="44" y="284" width="318" height="13" rx="6.5"/>
+        </g>
+        <g><rect x="356" y="172" width="60" height="21" rx="10" fill="#E9F5EF"/><rect x="356" y="208" width="60" height="21" rx="10" fill="#FFF6D6"/><rect x="356" y="244" width="60" height="21" rx="10" fill="#FBEBF2"/><rect x="356" y="280" width="60" height="21" rx="10" fill="#E9F5EF"/></g>
+
+        <!-- character A -->
+        <g transform="translate(430 150)">
+          <circle cx="70" cy="62" r="42" class="skin3"/>
+          <path d="M27 62c2-38 24-58 54-54 29 4 47 27 40 63-8-6-16-10-25-12l-4-16-14 13c-17 3-35 3-51 6z" class="hair1"/>
+          <circle cx="54" cy="62" r="4.2" fill="#161616"/><circle cx="86" cy="62" r="4.2" fill="#161616"/>
+          <path d="M47 51c5-4 11-4 15-1M76 50c5-4 11-4 15 1" class="face"/>
+          <path d="M58 84c14 9 27 8 37-2" class="face"/>
+          <circle cx="44" cy="72" r="6" fill="#E8A0A0" opacity=".5"/><circle cx="96" cy="72" r="6" fill="#E8A0A0" opacity=".5"/>
+          <rect x="22" y="106" width="96" height="118" rx="32" class="cloth1"/>
+          <path d="M42 122c22 20 44 20 62 0" stroke="#FFD633" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <rect x="60" y="122" width="20" height="46" rx="10" fill="#0E3A63"/>
+        </g>
+        <!-- character B -->
+        <g transform="translate(250 300)">
+          <circle cx="50" cy="44" r="32" class="skin1"/>
+          <path d="M18 46c-2-30 20-46 47-40 20 5 28 20 22 42-6-4-13-6-20-6l-3-12-11 10c-12 2-24 3-35 6z" class="hair3"/>
+          <circle cx="38" cy="45" r="3.4" fill="#161616"/><circle cx="62" cy="45" r="3.4" fill="#161616"/>
+          <path d="M32 35c5-3 10-3 14 0M56 35c5-3 10-3 14 0" class="face"/>
+          <path d="M40 60c8 6 18 6 26-1" class="face"/>
+          <rect x="10" y="80" width="82" height="92" rx="26" class="cloth3"/>
+          <rect x="34" y="80" width="34" height="24" rx="6" fill="#fff" opacity=".85"/>
+        </g>
+        <!-- character C -->
+        <g transform="translate(84 322)">
+          <circle cx="44" cy="37" r="28" class="skin4"/>
+          <path d="M14 40c2-27 21-41 45-38 18 3 27 17 25 36-9-3-18-4-27-3l-2-11-10 9c-11 2-21 4-31 7z" class="hair5"/>
+          <circle cx="34" cy="38" r="3.2" fill="#161616"/><circle cx="55" cy="38" r="3.2" fill="#161616"/>
+          <path d="M28 29c5-3 10-3 13 0M49 29c5-3 10-3 13 0" class="face"/>
+          <path d="M36 53c6 5 15 6 22 0" class="face"/>
+          <rect x="8" y="68" width="74" height="82" rx="24" class="cloth4"/>
+          <circle cx="45" cy="96" r="9" fill="#FFD633"/>
+        </g>
+        <text x="20" y="452" class="artLabel">one prompt &middot; one file &middot; interactive experience</text>
+        <text x="20" y="474" class="artLabel">learning dashboards &middot; status views &middot; sharepoint-ready</text>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<!-- ============ LEARNING PATH ============ -->
+<section class="section">
+  <h2>Your path through this gallery</h2>
+  <p class="lead">Six stages. Understand the idea, see when these dashboards shine, learn how they are made, explore patterns, then start building your own.</p>
+  <div class="rail">
+    <div class="railItem"><span class="railDot">1</span><b>Understand</b><span>What these dashboards are</span></div>
+    <div class="railItem"><span class="railDot">2</span><b>Why</b><span>When they beat the alternatives</span></div>
+    <div class="railItem"><span class="railDot">3</span><b>How</b><span>Copilot, Cowork &amp; SharePoint</span></div>
+    <div class="railItem"><span class="railDot">4</span><b>Patterns</b><span>Types you will find here</span></div>
+    <div class="railItem"><span class="railDot">5</span><b>Build</b><span>Start your own in minutes</span></div>
+    <div class="railItem"><span class="railDot">6</span><b>Extend</b><span>Host, share, iterate</span></div>
+  </div>
+  <div class="note"><p><b>How to use this page.</b> Flip cards respond to hover or keyboard focus. Expand any <b>+</b> section for more detail. Everything works offline — no connection required after the page loads.</p></div>
+</section>
+
+<!-- ============ 1. UNDERSTAND ============ -->
+<section class="section">
+  <h2><span class="stepno">1</span>Understand the core idea</h2>
+  <p class="lead">These are not websites. They are single HTML files that behave like polished, interactive experiences.</p>
+
+  <div class="grid cols3">
+    <div class="card"><div class="icon">&#9636;</div><h3>One file</h3><p>HTML, CSS, and (when needed) lightweight logic live together. Open the file in a browser and it runs. No server, no build step, no package manager.</p></div>
+    <div class="card"><div class="icon">&#128187;</div><h3>Copilot-generated</h3><p>Most pages here started as a prompt to Microsoft Copilot, Copilot Cowork, or Copilot in SharePoint. Humans refine; the AI does the heavy lifting of layout and structure.</p></div>
+    <div class="card"><div class="icon">&#128640;</div><h3>Shareable anywhere</h3><p>Email the file, drop it in a document library, host it on GitHub Pages, or paste the content into a SharePoint text web part. Permissions travel with the file or the host.</p></div>
+  </div>
+
+  <div class="note"><p><b>Think of it as&hellip;</b> a PowerPoint that actually works. Instead of a static slide deck, you get filters, flip cards, status timelines, and self-checks that people can interact with.</p></div>
+
+  <h3>Flip cards — the key concepts</h3>
+  <div class="deck">
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Concept</span><h4>Self-contained</h4><p>What does “self-contained” really mean?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Self-contained</span><p>Everything the page needs is inside the single .html file (or a small set of files in the same folder). No CDN calls, no external fonts required, no backend. It works offline once downloaded.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Concept</span><h4>CSS-only interactivity</h4><p>How do flip cards and accordions work without JavaScript?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">CSS-only</span><p>Modern CSS handles hover, focus, and the open state of &lt;details&gt;. This keeps the page simple, accessible, and safe to paste into environments that strip scripts.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Concept</span><h4>Learning vs reporting</h4><p>Are these only for training?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Learning vs reporting</span><p>No. The same pattern works for project status, pipeline views, onboarding checklists, and any scenario where people need a clear, interactive view of structured information.</p></div>
+    </div></div>
+  </div>
+  <div class="deckHint">Cards flip on hover and on keyboard focus. On a phone, tap a card to flip it. When you print this page, both sides are shown.</div>
+</section>
+
+<!-- ============ 2. WHY ============ -->
+<section class="section">
+  <h2><span class="stepno">2</span>When these dashboards win</h2>
+  <p class="lead">They are not a replacement for Power BI or full web apps. They shine in a specific sweet spot.</p>
+
+  <div class="tableWrap">
+  <table>
+    <thead><tr><th>What you need</th><th>Use a Copilot HTML dashboard when&hellip;</th><th>Use Power BI / Excel when&hellip;</th><th>Use a full web app when&hellip;</th></tr></thead>
+    <tbody>
+      <tr><td><b>Speed to first version</b></td><td>You want something usable in under an hour from a prompt.</td><td>You already have the data model and need ongoing analytics.</td><td>You need multi-user editing, authentication, and long-term product ownership.</td></tr>
+      <tr><td><b>Distribution</b></td><td>You need to email a file, drop it in SharePoint, or host a static page.</td><td>Everyone already lives in the Microsoft 365 data ecosystem.</td><td>You control the hosting and identity platform.</td></tr>
+      <tr><td><b>Interactivity</b></td><td>Flip cards, accordions, simple filters, and timelines are enough.</td><td>You need rich cross-filtering, drill-through, and measures.</td><td>You need complex client-side state and API calls.</td></tr>
+      <tr><td><b>Learning &amp; enablement</b></td><td>You are teaching a concept and want people to self-test as they go.</td><td>You are reporting performance numbers.</td><td>You are building a product, not a teaching aid.</td></tr>
+      <tr><td><b>Offline / locked-down</b></td><td>The file must work without network access after download.</td><td>Live connections to the semantic model are required.</td><td>You can ship a progressive web app or desktop client.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="warn"><p><b>Honest boundary.</b> If the data changes every hour and dozens of people need simultaneous live updates with write-back, an HTML file is the wrong tool. Use it for clarity, teaching, and status that can refresh on open or on demand.</p></div>
+</section>
+
+<!-- ============ 3. HOW ============ -->
+<section class="section">
+  <h2><span class="stepno">3</span>How they are made</h2>
+  <p class="lead">Three common routes. All of them start with a clear prompt and end with a single file (or a small folder) you can host anywhere.</p>
+
+  <div class="grid cols3">
+    <div class="card">
+      <span class="tag">Route 1</span>
+      <h3>Copilot in SharePoint</h3>
+      <p>Point Copilot at a list, Excel file, or library content and ask for an interactive HTML dashboard. The result can stay connected to the list so numbers refresh when the source changes.</p>
+      <p>Best for status views and operational dashboards that live next to the data.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Route 2</span>
+      <h3>Copilot Cowork</h3>
+      <p>Use a multi-step conversation to design the structure, generate the HTML, refine the layout, and produce companion artifacts (slides, scripts, learning lists) from the same material.</p>
+      <p>Best when you want a learning experience or a family of related outputs.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Route 3</span>
+      <h3>GitHub Copilot / VS Code</h3>
+      <p>Describe the page in chat or via a skill, iterate on the single file, and push it to a GitHub Pages-enabled repository. Ideal for public galleries and open inspiration.</p>
+      <p>Best for public sharing and version-controlled collections.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-block-start:26px">Guided workflow: from prompt to hosted page</h3>
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">01</span><h3>Decide the job of the page</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>A clear purpose keeps the layout focused and the prompt short.</p></div>
+      <div class="pedCell"><b>When</b><p>Before you open Copilot.</p></div>
+      <div class="pedCell"><b>How</b><p>Write one sentence: “This page should help a new colleague understand X and leave knowing Y.”</p></div>
+      <div class="pedCell check"><b>Check</b><p>You can state the primary audience and the one action they should take after reading.</p></div>
+    </div>
+  </div>
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">02</span><h3>Prompt for structure, not pixels</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>Copilot is better at overall architecture than at guessing your exact brand tokens on the first try.</p></div>
+      <div class="pedCell"><b>When</b><p>First prompt.</p></div>
+      <div class="pedCell"><b>How</b><p>Ask for stages, flip cards, a comparison table, and a clear next-step section. Mention that the result must be a single self-contained HTML file with no external scripts.</p></div>
+      <div class="pedCell check"><b>Check</b><p>The first draft has a logical flow and the interactive pieces you asked for, even if the colours need adjustment.</p></div>
+    </div>
+  </div>
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">03</span><h3>Refine and validate</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>Small iteration beats a perfect first prompt.</p></div>
+      <div class="pedCell"><b>When</b><p>After the first generation.</p></div>
+      <div class="pedCell"><b>How</b><p>Ask for specific changes (“make the flip cards keyboard-accessible”, “add a print stylesheet”, “remove any script tags”). Open the file locally and test the interactions.</p></div>
+      <div class="pedCell check"><b>Check</b><p>No &lt;script&gt; tags, flip cards work with Tab + Enter, and the page looks coherent on a phone.</p></div>
+    </div>
+  </div>
+  <div class="ped">
+    <div class="pedHead"><span class="stepno">04</span><h3>Host and share</h3></div>
+    <div class="pedGrid">
+      <div class="pedCell"><b>Why</b><p>A file on your desktop helps only you.</p></div>
+      <div class="pedCell"><b>When</b><p>Once the content is stable.</p></div>
+      <div class="pedCell"><b>How</b><p>Push to a public GitHub repository with Pages enabled, or upload to a SharePoint document library and share the link. Add a short description so people know what the page is for.</p></div>
+      <div class="pedCell check"><b>Check</b><p>Someone who was not involved can open the link and immediately understand the purpose.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. PATTERNS ============ -->
+<section class="section">
+  <h2><span class="stepno">4</span>Patterns you will find in this gallery</h2>
+  <p class="lead">Each pattern solves a different job. Browse the examples below; more will be added as the collection grows.</p>
+
+  <div class="grid cols2">
+    <div class="card case">
+      <div class="avatar">L</div>
+      <div>
+        <span class="realTag">Learning</span>
+        <h3>Begin-to-end learning experience</h3>
+        <p><b>Job:</b> Teach a topic with stages, flip cards, self-checks, and a clear next action.</p>
+        <p>Typical contents: learning path rail, Why/When/How/Check workflows, flashcard decks, FAQ, and a “Take it further” section.</p>
+        <p>Example starting point: Microsoft Lists / SharePoint list enablement pages.</p>
+      </div>
+    </div>
+    <div class="card case">
+      <div class="avatar">S</div>
+      <div>
+        <span class="realTag">Status</span>
+        <h3>Project or milestone timeline</h3>
+        <p><b>Job:</b> Show progress at a glance without a full project tool.</p>
+        <p>Typical contents: status-coloured timeline, filtered views, owner and due-date cards, simple legend.</p>
+        <p>Works especially well when the source is a SharePoint list that Copilot can read.</p>
+      </div>
+    </div>
+    <div class="card case">
+      <div class="avatar">P</div>
+      <div>
+        <span class="realTag">Pipeline</span>
+        <h3>Recruitment or request pipeline</h3>
+        <p><b>Job:</b> Visualise stages and bottlenecks for candidates, requests, or approvals.</p>
+        <p>Typical contents: board-style or staged cards, counts per stage, simple filters by owner or priority.</p>
+      </div>
+    </div>
+    <div class="card case">
+      <div class="avatar">O</div>
+      <div>
+        <span class="realTag">Onboarding</span>
+        <h3>New-joiner or role checklist</h3>
+        <p><b>Job:</b> Give a new person a clear, interactive path through their first weeks.</p>
+        <p>Typical contents: sequenced steps, check-style cards, links to the real resources, and a “who to ask” section.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="note"><p><b>Gallery note.</b> Individual dashboards live as separate HTML files (or folders) in this repository. This overview page is the front door. As new examples are added, they will appear here with a short description and a direct link.</p></div>
+</section>
+
+<!-- ============ 5. BUILD ============ -->
+<section class="section">
+  <h2><span class="stepno">5</span>Start building your own</h2>
+  <p class="lead">You do not need to be a developer. You need a clear job for the page and a good first prompt.</p>
+
+  <div class="grid cols2">
+    <div class="card">
+      <span class="tag">Prompt starter</span>
+      <h3>Learning experience</h3>
+      <p>Create a single self-contained HTML learning dashboard about [topic]. Use a navy and yellow professional palette. Include a hero, a 6-stage learning path, Why/When/How/Check workflow blocks, CSS-only flip flashcards, a comparison table, use-case cards, a 6-question self-check, FAQ accordions, and a “Take it further” section. No JavaScript. No external assets. Keyboard-accessible flip cards.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Prompt starter</span>
+      <h3>Status / timeline view</h3>
+      <p>Create a single self-contained HTML dashboard that shows project milestones as a horizontal timeline with status badges (complete, in progress, overdue, not started). Include a short legend, owner and due-date cards, and a note on how the data can be refreshed from a SharePoint list. No external scripts. Clean, readable layout suitable for emailing or hosting on GitHub Pages.</p>
+    </div>
+  </div>
+
+  <div class="good"><p><b>Practical tip.</b> After the first generation, ask Copilot to “remove any script tags and ensure all interactivity is pure CSS” and “add a print stylesheet that shows both sides of flip cards”. These two follow-ups fix most first-draft problems.</p></div>
+
+  <h3 style="margin-block-start:26px">Flip cards — common first mistakes</h3>
+  <div class="deck">
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Watch out</span><h4>Script tags</h4><p>Why do some first drafts contain JavaScript?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Script tags</span><p>Many models default to interactive widgets that need JS. Explicitly require “no JavaScript, CSS-only interactivity” in the prompt and re-check the output for &lt;script&gt; or on* handlers before you ship.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Watch out</span><h4>External assets</h4><p>What breaks offline use?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">External assets</span><p>Links to Google Fonts, icon CDNs, or image hosts. Keep fonts system-only (Arial is fine) and draw illustrations as inline SVG so the page remains fully self-contained.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Watch out</span><h4>Missing keyboard support</h4><p>How do flip cards stay accessible?</p><span class="flipHint">Hover or tab to flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Keyboard support</span><p>Give every flip card tabindex="0" and drive the flip with :hover and :focus-within. Test with the Tab key. Screen-reader users and keyboard-only users should be able to reach and activate every card.</p></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ============ 6. EXTEND ============ -->
+<section class="section">
+  <h2><span class="stepno">6</span>Host, share, and keep growing</h2>
+  <p class="lead">Once you have a solid page, the remaining work is distribution and iteration.</p>
+
+  <div class="grid cols3">
+    <div class="card"><div class="icon">&#128187;</div><h3>GitHub Pages</h3><p>Push the file (or folder) to a public repository, enable Pages from the main branch root or /docs, and share the clean URL. Perfect for an inspiration gallery like this one.</p></div>
+    <div class="card"><div class="icon">&#128193;</div><h3>SharePoint library</h3><p>Upload the HTML file to a document library. People with access can open it directly. For richer embedding, paste the content into a text web part on a modern page (scripts will be stripped, so keep the page CSS-only).</p></div>
+    <div class="card"><div class="icon">&#128231;</div><h3>Email or Teams</h3><p>Attach the file or send the hosted link. Because the page is self-contained, recipients can save it and open it later even offline.</p></div>
+  </div>
+
+  <div class="note"><p><b>Versioning habit.</b> Treat each significant improvement as a new commit (or a new dated folder). The history becomes a useful record of how the design and content evolved.</p></div>
+</section>
+
+<!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+<section class="section">
+  <h2>Check your understanding</h2>
+  <p class="lead">Six quick questions covering the whole path. Flip only after you have answered in your head.</p>
+  <div class="deck">
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Question 1</span><h4>One file or many?</h4><p>Why do most of these dashboards stay as a single HTML file?</p><span class="flipHint">Answer first, then flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer 1</span><p>So they remain easy to share, host, and open offline. One file (or a small self-contained folder) removes dependency and permission friction.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Question 2</span><h4>Right tool?</h4><p>When would you choose Power BI instead of an HTML dashboard?</p><span class="flipHint">Answer first, then flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer 2</span><p>When you need ongoing analytics, rich cross-filtering, measures, and live connections to a semantic model for a large audience of data consumers.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Question 3</span><h4>No JavaScript</h4><p>Why is “no script” a deliberate constraint?</p><span class="flipHint">Answer first, then flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer 3</span><p>It keeps the page safe to paste into SharePoint text web parts, simple to audit, and fully functional offline. CSS handles the interactivity that most learning and status pages need.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Question 4</span><h4>First prompt</h4><p>What should the first prompt emphasise?</p><span class="flipHint">Answer first, then flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer 4</span><p>The job of the page, the required sections (hero, stages, flip cards, next steps), the single-file constraint, and the ban on external scripts and assets.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Question 5</span><h4>Accessibility</h4><p>How do flip cards stay usable from the keyboard?</p><span class="flipHint">Answer first, then flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer 5</span><p>Each card has tabindex="0" and the flip is triggered by :focus-within as well as :hover. Test with Tab and Enter/Space.</p></div>
+    </div></div>
+    <div class="flip" tabindex="0"><div class="flipInner">
+      <div class="flipFace flipFront"><span class="flipTag">Question 6</span><h4>Ready to share?</h4><p>What must be true before you publish a new dashboard?</p><span class="flipHint">Answer first, then flip &#8635;</span></div>
+      <div class="flipFace flipBack"><span class="flipTag">Answer 6</span><p>No script tags, interactions work, the page has a clear purpose statement, and a stranger can open the link and understand what it is for within a few seconds.</p></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section">
+  <h2>Frequently asked questions</h2>
+  <p class="lead">Practical questions that come up once people start building their own pages.</p>
+
+  <details><summary>Can I use these pages inside SharePoint?</summary><div class="body">
+    <p>Yes. You can upload the HTML file to a document library and open it, or paste the content into a modern text web part. Because scripts are removed by SharePoint, keep the page CSS-only so the interactive pieces survive.</p>
+  </div></details>
+
+  <details><summary>Do the dashboards stay connected to live data?</summary><div class="body">
+    <p>It depends on how they were generated. Dashboards created with Copilot in SharePoint can be built to read from a list so the view refreshes when the list changes. Pure static files generated elsewhere are snapshots unless you add a refresh mechanism.</p>
+  </div></details>
+
+  <details><summary>Is JavaScript ever allowed?</summary><div class="body">
+    <p>For pages that must be pasted into SharePoint text web parts or emailed as simple attachments, keep them script-free. For GitHub Pages or other hosts that allow scripts, light JavaScript is fine if you accept the extra complexity and security considerations.</p>
+  </div></details>
+
+  <details><summary>How do I contribute a new dashboard to this gallery?</summary><div class="body">
+    <p>Add the HTML file (or folder) to the repository, update this overview page with a short card describing the new example, and open a pull request. Keep the same visual language where possible so the collection feels coherent.</p>
+  </div></details>
+
+  <details><summary>What if the first Copilot result looks wrong?</summary><div class="body">
+    <p>Iterate. Ask for specific changes rather than regenerating from scratch. Common follow-ups: remove scripts, fix colour contrast, make flip cards keyboard-accessible, add a print stylesheet, and tighten the one-sentence purpose at the top.</p>
+  </div></details>
+
+  <details><summary>Can these replace formal training platforms?</summary><div class="body">
+    <p>They are excellent for focused, self-paced learning experiences and status communication. They are not a full LMS. Use them as high-quality supporting material that people can open immediately without signing into another system.</p>
+  </div></details>
+</section>
+
+<!-- ============ TAKE IT FURTHER ============ -->
+<section class="section cta">
+  <h2><span class="stepno">6</span>Take it further&hellip;</h2>
+  <p class="lead">This overview is the front door. The real value lives in the individual dashboards you (and others) add next.</p>
+
+  <div class="grid cols3">
+    <div class="card">
+      <div class="icon">&#10022;</div>
+      <h3>Add your first example</h3>
+      <p>Pick one real problem your team has — a learning topic, a status view, or an onboarding checklist — and generate a focused HTML page for it. Then host it here.</p>
+    </div>
+    <div class="card">
+      <div class="icon">&#9636;</div>
+      <h3>Connect to a list</h3>
+      <p>If you use Copilot in SharePoint, try generating a dashboard that stays linked to a live list so the numbers update when the source data changes.</p>
+    </div>
+    <div class="card">
+      <div class="icon">&#127891;</div>
+      <h3>Share the pattern</h3>
+      <p>Show colleagues the prompt that worked and the resulting file. The fastest way to spread the practice is a working example plus the exact words you used.</p>
+    </div>
+  </div>
+
+  <div class="grid cols3" style="margin-block-start:18px">
+    <div class="card"><h3>Your next 20 minutes</h3><p>Write the one-sentence purpose for a page you actually need, then paste one of the prompt starters above into Copilot and generate the first draft.</p></div>
+    <div class="card"><h3>Your next week</h3><p>Polish the draft, remove any scripts, host it on GitHub Pages or in a SharePoint library, and send the link to two colleagues for feedback.</p></div>
+    <div class="card"><h3>Your next month</h3><p>Turn the successful page into a repeatable pattern: keep a short “recipe” of the prompt + constraints so the next one is even faster.</p></div>
+  </div>
+</section>
+
+<!-- ============ SOURCES ============ -->
+<section class="section sources">
+  <p><b>About this page.</b> An overview and learning path for the Copilot HTML Dashboards gallery — a public collection of self-contained interactive HTML pages created with Microsoft Copilot, Copilot Cowork, and Copilot in SharePoint. Use it as inspiration and as a practical starting point for your own work.</p>
+  <p>Individual dashboard examples live as separate files in this repository. This page is the front door and will be updated as the collection grows.</p>
+  <p><b>Design system.</b> Navy / yellow professional palette, CSS-only flip cards and accordions, keyboard-accessible interactions, and a print stylesheet that shows both sides of every card.</p>
+</section>
+
+<div class="footer">COPILOT HTML DASHBOARDS &middot; INSPIRATION GALLERY</div>
+</div>
+</body>
+</html>

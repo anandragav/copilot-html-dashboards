@@ -1,0 +1,1283 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learning Designer · live HTML demo</title>
+<meta name="description" content="Learning Designer for Copilot in SharePoint, drawn live in HTML: a filled Learning Request Brief goes in, the skill runs, and an interactive learning page comes out.">
+
+<style>
+/* HTML Demo's window (StepWindow.jsx): a Mac window whose stage is the app
+   drawn at 1200 × 750 and scaled to fit by --k, and the steps in a bar
+   along its foot. Everything the app draws is the steps' own CSS; this is
+   only the frame, the pointer and the bar. */
+.hd {
+  display: grid;
+}
+.hd-win {
+  position: relative;
+  /* A <figure> keeps a 40 px side margin by default: on a phone that is
+     80 px of a 390 px screen gone. */
+  margin: 0;
+  border-radius: 14px;
+  background: #0b0c0e;
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.14),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 40px 120px -40px rgba(0, 0, 0, 0.85),
+    0 30px 60px -30px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+/* The title bar: traffic lights, Home, the tabs, the globe and the menu. */
+.hd-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 10px 0 14px;
+  background: #16171a;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.07);
+  font: 500 11.5px/1 var(--hd-font, system-ui, sans-serif);
+  color: #8a8e96;
+  white-space: nowrap;
+}
+.hd-lights {
+  display: flex;
+  gap: 7px;
+  margin-right: 8px;
+}
+.hd-lights i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+.hd-lights i:nth-child(2) {
+  background: #febc2e;
+}
+.hd-lights i:nth-child(3) {
+  background: #28c840;
+}
+.hd-bar svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.hd-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  max-width: 190px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 7px;
+}
+.hd-tab > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hd-tab b {
+  flex: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+}
+.hd-tab.on {
+  color: #f3f4f5;
+  background: rgba(255, 255, 255, 0.085);
+}
+.hd-gap {
+  flex: 1;
+}
+
+/* The stage: the app at its design size, scaled as a whole. */
+.hd-view {
+  --k: 0.6;
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #08090a;
+}
+.hd-stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1200px;
+  height: 750px;
+  overflow: hidden;
+  transform: scale(var(--k));
+  transform-origin: 0 0;
+  background: #08090a;
+  color: #c3c6cc;
+  font: 500 13px/1.35 var(--hd-font, system-ui, sans-serif);
+  text-align: left;
+  user-select: none;
+  /* A demo, not the app: nothing in it takes a click. */
+  pointer-events: none;
+  -webkit-font-smoothing: antialiased;
+  animation: hd-in 0.45s cubic-bezier(0.2, 0.7, 0.1, 1) both;
+}
+@keyframes hd-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* The pointer: it glides (move s) or is placed (glide()), and presses. */
+.hd-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 30;
+  width: 32px;
+  height: 32px;
+  transition-property: transform, opacity;
+  transition-timing-function: cubic-bezier(0.55, 0, 0.25, 1), ease;
+}
+.hd-cursor svg {
+  display: block;
+  overflow: visible;
+  transform-origin: 5px 5px;
+  transform: scale(1.15);
+  transition: transform 0.1s;
+  filter: drop-shadow(0 1px 1.2px rgba(0, 0, 0, 0.35));
+}
+.hd-cursor.away {
+  opacity: 0;
+}
+.hd-cursor.press svg {
+  transform: scale(0.98);
+}
+
+/* The steps along the foot: a number, a name and a line that fills. */
+.hd-steps {
+  display: flex;
+  gap: 2px;
+  margin: 0;
+  padding: 5px 6px;
+  list-style: none;
+  background: #16171a;
+  border-top: 0.5px solid rgba(255, 255, 255, 0.07);
+}
+.hd-steps li {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.hd-steps button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 10px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  font: 500 12.5px/1.5 var(--hd-font, system-ui, sans-serif);
+  color: #8a8e96;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    background 0.2s;
+}
+.hd-steps button:hover,
+.hd-steps button.on {
+  color: #f3f4f5;
+}
+.hd-steps button:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.hd-steps button:focus-visible {
+  outline: 2px solid var(--hd-focus, #a3abff);
+  outline-offset: -2px;
+}
+.hd-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hd-n {
+  flex: none;
+  font: 500 10.5px/1 var(--hd-mono, ui-monospace, monospace);
+  letter-spacing: 0.06em;
+  color: #5c6067;
+}
+.hd-steps button.on .hd-n {
+  color: #8a8e96;
+}
+/* The step's line, filled as far as it has played. */
+.hd-steps i {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 3px;
+  height: 1.5px;
+  border-radius: 2px;
+  background:
+    linear-gradient(
+      90deg,
+      #c3c6cc calc(var(--p) * 100%),
+      transparent calc(var(--p) * 100%)
+    ),
+    rgba(255, 255, 255, 0.08);
+}
+.hd-steps button:not(.on) i {
+  opacity: 0.55;
+}
+
+@media (max-width: 560px) {
+  .hd-bar {
+    height: 28px;
+    padding-left: 10px;
+    font-size: 10.5px;
+  }
+  .hd-lights {
+    gap: 5px;
+    margin-right: 4px;
+  }
+  .hd-lights i {
+    width: 9px;
+    height: 9px;
+  }
+  .hd-tab:not(.on) {
+    display: none;
+  }
+  .hd-steps button {
+    gap: 5px;
+    padding: 7px 6px 9px;
+    font-size: 11px;
+  }
+  .hd-n {
+    display: none;
+  }
+}
+
+/* Less motion: the end frames stand still, and nothing animates on top. */
+@media (prefers-reduced-motion: reduce) {
+  .hd-stage,
+  .hd-stage *,
+  .hd-cursor,
+  .hd-cursor svg {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Swatches (moved from an inline style attribute in step-window.js). */
+.hd-sw0{background:#efb36c}.hd-sw1{background:#ef7d9b}.hd-sw2{background:#82c1ee}
+
+/* Learning Designer demo v2 (matches the real recording). Prefix: ldd- */
+.ldd-app{--ldd-ui:"Segoe UI","Segoe UI Web",system-ui,-apple-system,"Helvetica Neue",Roboto,Arial,sans-serif;position:absolute;inset:0;background:#fff;color:#242424;font:400 11px/1.4 var(--ldd-ui);overflow:hidden}
+.ldd-app svg{display:block}
+.ldd-app [hidden]{display:none!important}
+.ldd-ic{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ldd-sm .ldd-ic,.ldd-ic.sm{width:12px;height:12px}
+
+/* ---------- Step 1–2: the structured document form ---------- */
+.ldd-formbg{position:absolute;inset:0;background:linear-gradient(115deg,#d3ecf0 0%,#d6efe2 45%,#e0f7d3 100%)}
+.ldd-fscroll{position:absolute;left:0;right:0;top:0}
+.ldd-card{position:absolute;left:363px;width:464px;top:47px;background:#fafbfa;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:28px 32px 26px}
+.ldd-card h3{margin:0 0 10px;font-size:17px;font-weight:600;color:#242424}
+.ldd-priv{margin:0 0 30px;font-size:10px;color:#616161}
+.ldd-fld{margin:0 0 20px}
+.ldd-lab{display:flex;align-items:center;gap:6px;font-size:10.5px;color:#424242;margin:0 0 7px}
+.ldd-lab svg{width:9px;height:9px;fill:none;stroke:#616161;stroke-width:1.6}
+.ldd-in{position:relative;min-height:22px;background:#eae8e6;border:1px solid #eae8e6;border-radius:2px;padding:4px 6px;font-size:9.5px;line-height:1.45;color:#323130;white-space:pre-wrap}
+.ldd-in.ml{min-height:60px}
+.ldd-in.ml::after{content:"";position:absolute;right:2px;bottom:2px;width:5px;height:5px;border-right:1px solid #a19f9d;border-bottom:1px solid #a19f9d;transform:skew(-0deg)}
+.ldd-in.ph{color:#8a8886}
+.ldd-in.on{background:#fff;border-color:#40636a;box-shadow:0 0 0 .5px #40636a}
+.ldd-caret{display:inline-block;width:1px;height:11px;background:#242424;vertical-align:-2px}
+.ldd-submit{display:inline-flex;align-items:center;gap:7px;height:21px;padding:0 15px;border-radius:3px;background:#0e5a4a;color:#fff;font-weight:600;font-size:9.5px;margin-top:4px}
+.ldd-submit.busy{background:#eae8e6;color:#323130;padding:0 9px}
+.ldd-submit.press{filter:brightness(.85)}
+.ldd-spin{width:11px;height:11px;border-radius:50%;border:1.6px solid #c8c6c4;border-top-color:#0f6cbd;transform:rotate(calc(var(--ldd-r,0) * 1turn))}
+.ldd-foot{margin:24px 0 0;font-size:8px;line-height:1.5;color:#616161}
+.ldd-thanks{position:absolute;left:443px;top:183px;width:312px;background:#fafbfa;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.1);text-align:center;padding:40px 0 22px}
+.ldd-thanks svg{margin:0 auto 12px;width:86px;height:86px}
+.ldd-thanks h4{margin:0 0 2px;font-size:17px;font-weight:400;color:#242424}
+.ldd-thanks p{margin:0 0 16px;font-size:8.5px;color:#616161}
+.ldd-again{display:inline-block;border:1px solid #c8c6c4;border-radius:3px;padding:5px 14px;font-weight:600;font-size:9.5px;background:#fff}
+
+/* ---------- Step 3–4: SharePoint lookalike library ---------- */
+.ldd-suite{position:absolute;left:0;right:0;top:0;height:24px;background:#fff;border-bottom:1px solid #edebe9;display:flex;align-items:center;padding:0 10px;gap:10px}
+.ldd-waffle{display:grid;grid-template-columns:repeat(3,3px);gap:2px}
+.ldd-waffle i{width:3px;height:3px;background:#424242}
+.ldd-wordmark{font-weight:600;font-size:10.5px;color:#a4262c;letter-spacing:-.1px}
+.ldd-search{position:absolute;left:413px;width:293px;top:3px;height:18px;border-radius:4px;background:#f3f2f1;border:1px solid #e1dfdd;display:flex;align-items:center;gap:6px;padding:0 8px;font-size:9px;color:#616161}
+.ldd-suite-r{margin-left:auto;display:flex;align-items:center;gap:13px;color:#424242;font-size:9px}
+.ldd-av{width:17px;height:17px;border-radius:50%;background:#8764b8;color:#fff;font:600 7.5px/17px var(--ldd-ui);text-align:center}
+.ldd-av.lg{width:20px;height:20px;line-height:20px;font-size:8px}
+.ldd-rail{position:absolute;left:0;top:24px;bottom:0;width:52px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:9px;padding-top:12px;font-size:6.5px;color:#424242}
+.ldd-rail span{display:flex;flex-direction:column;align-items:center;gap:2px}
+.ldd-rail .ldd-ic{width:13px;height:13px}
+.ldd-main{position:absolute;left:52px;right:9px;top:30px;bottom:0;background:#fff;border-radius:6px 6px 0 0;box-shadow:0 0 2px rgba(0,0,0,.12);overflow:hidden}
+.ldd-banner{position:absolute;left:0;right:0;top:0;height:54px;background:linear-gradient(90deg,#1b2a66 0%,#2b2f7a 40%,#5a2d8c 75%,#8a3d9e 100%);color:#fff;display:flex;align-items:center;padding:0 10px;gap:14px;overflow:hidden}
+.ldd-sitelogo{width:33px;height:33px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#9fe0ff,#2f7fd6 55%,#1b3d8f);box-shadow:inset 0 0 0 2px rgba(255,255,255,.7)}
+.ldd-banner h2{margin:0 6px 0 0;font-size:17px;font-weight:700;letter-spacing:-.2px}
+.ldd-bnav{display:flex;gap:16px;font-size:9.5px;font-weight:600}
+.ldd-bswirl{position:absolute;right:120px;top:-14px;width:80px;height:80px;border-radius:40%;background:conic-gradient(from 30deg,#2fd2ff,#3b6cff,#c252e1,#ff7a59,#ffd34d,#2fd2ff);filter:blur(5px);opacity:.75}
+.ldd-bright{margin-left:auto;display:flex;gap:16px;font-size:9px;position:relative}
+.ldd-bright span{display:flex;align-items:center;gap:4px}
+.ldd-crumb{position:absolute;left:14px;top:64px;display:flex;align-items:center;gap:8px;font-size:15px;color:#616161}
+.ldd-crumb b{font-weight:600;color:#242424}
+.ldd-tools{position:absolute;right:14px;top:65px;display:flex;align-items:center;gap:5px;font-size:9px;color:#424242}
+.ldd-tb{display:flex;align-items:center;gap:4px;height:21px;padding:0 7px;border:1px solid #e1dfdd;border-radius:4px;background:#fff}
+.ldd-create{display:flex;align-items:center;gap:4px;height:21px;padding:0 10px;border-radius:4px;background:#111;color:#fff;font-weight:600}
+.ldd-views{position:absolute;left:14px;right:14px;top:96px;height:24px;display:flex;align-items:center;gap:6px;font-size:9px;color:#424242}
+.ldd-views .ldd-tb{border:0}
+.ldd-views .ldd-vsel{background:#e1dfdd;border-radius:12px;border:1px solid #c8c6c4}
+.ldd-oi{width:13px;height:13px;border-radius:3px;color:#fff;font:700 7px/13px var(--ldd-ui);text-align:center}
+.ldd-sel-tools{position:absolute;left:10px;right:0;top:96px;height:24px;display:flex;align-items:center;gap:14px;font-size:9px;color:#424242;white-space:nowrap}
+.ldd-sel-tools span{display:flex;align-items:center;gap:4px}
+.ldd-grid{position:absolute;left:14px;right:14px;top:122px;bottom:0;border:1px solid #edebe9;border-bottom:0;border-radius:6px 6px 0 0;overflow:hidden}
+.ldd-rowl{position:absolute;left:0;height:31px;width:1150px;display:flex;align-items:center;font-size:9px;color:#424242;white-space:nowrap}
+.ldd-rowl.head{height:28px;font-weight:600;color:#424242}
+.ldd-rowl > span{position:absolute;display:flex;align-items:center;gap:6px;overflow:hidden;text-overflow:ellipsis}
+.ldd-c0{left:28px;width:14px}
+.ldd-c1{left:50px;width:270px}
+.ldd-c1 em{font-style:normal;overflow:hidden;text-overflow:ellipsis;color:#242424}
+.ldd-c2{left:339px;width:70px}
+.ldd-c3{left:422px;width:150px}
+.ldd-c4{left:602px;width:200px}
+.ldd-c5{left:862px;width:110px}
+.ldd-rowl.sel{background:#f0f0f0}
+.ldd-rowl.hov{background:#f5f5f5}
+.ldd-rowl.new{animation:none;background:rgba(222,236,249,var(--ldd-flash,0))}
+.ldd-radio{width:11px;height:11px;border-radius:50%;border:1px solid #8a8886;display:grid;place-items:center;color:#fff}
+.ldd-rowl.sel .ldd-radio{background:#242424;border-color:#242424}
+.ldd-radio svg{width:8px;height:8px}
+.ldd-ft{width:11px;height:13px;border-radius:2px;flex:none;position:relative}
+.ldd-ft.doc{background:linear-gradient(#2b7cd3,#185abd)}
+.ldd-ft.png{background:#fff;border:1px solid #8a8886}
+.ldd-ft.htm{background:#fff;border:1px solid #616161}
+.ldd-ft.htm::after{content:"";position:absolute;left:2px;right:2px;top:4px;height:3px;background:#616161}
+.ldd-who{background:#f3f2f1;border-radius:2px;padding:1px 3px;color:#424242}
+.ldd-cld{display:inline-flex;align-items:center;gap:3px;height:13px;padding:0 5px;border:1px solid #9cc3eb;background:#e8f2fc;color:#0f548c;border-radius:3px;font-size:8px}
+.ldd-cld.press{background:#c7e0f4}
+.ldd-rowacts{display:flex;gap:9px;color:#616161;margin-left:4px}
+.ldd-fab{position:absolute;width:39px;height:39px;border-radius:10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.18);display:grid;place-items:center}
+.ldd-logo{width:18px;height:18px;border-radius:6px;background:conic-gradient(from 210deg,#18b4f5,#3b6cff,#b44be1,#ff6f61,#ffc83d,#5ed16a,#18b4f5);position:relative}
+.ldd-logo::after{content:"";position:absolute;inset:4.5px;border-radius:3px;background:#fff;opacity:.9}
+.ldd-logo.sm{width:12px;height:12px;border-radius:4px}
+.ldd-logo.sm::after{inset:3px;border-radius:2px}
+.ldd-hscroll{position:absolute;left:14px;bottom:6px;height:5px;border-radius:3px;background:#c8c6c4}
+
+/* Copilot pane */
+.ldd-pane{position:absolute;left:788px;right:9px;top:84px;bottom:0;background:#fff;transform:translateX(calc((1 - var(--ldd-open,0)) * 105%));display:flex;flex-direction:column}
+.ldd-ph{height:30px;display:flex;align-items:center;gap:6px;padding:0 6px 0 10px;font-size:10px;font-weight:600}
+.ldd-ph .ldd-r{margin-left:auto;display:flex;gap:14px;color:#424242}
+.ldd-pv{position:relative;flex:1;overflow:hidden}
+.ldd-pc{position:absolute;left:0;right:0;top:0;padding:4px 14px 10px 10px;font-size:9.5px;line-height:1.5;color:#242424}
+.ldd-hi{font-size:12.5px;font-weight:700;margin:2px 0 4px}
+.ldd-welcome{color:#424242;margin:0 0 14px}
+.ldd-sugg{display:inline-block;border:1px solid #d1d1d1;border-radius:6px;padding:6px 7px;margin:0 0 9px;font-size:9px;background:#fff}
+.ldd-bubble{margin:52px 6px 14px 22px;background:#f5f5f5;border-radius:6px;padding:8px 12px;font-size:9px;line-height:1.55;color:#424242}
+.ldd-who2{display:flex;align-items:center;gap:6px;font-weight:600;margin:0 0 6px}
+.ldd-custom{font-size:8px;color:#424242;margin:0 0 18px}
+.ldd-custom u{color:#242424}
+.ldd-think{display:flex;align-items:center;gap:7px;color:#424242;margin:0 0 10px}
+.ldd-dot{width:8px;height:8px;border-radius:50%;background:#7f85f5;transform:scale(calc(.8 + var(--ldd-pulse,0) * .35))}
+.ldd-line{font-size:9px;font-weight:600;color:#424242;margin:0 0 18px;display:flex;align-items:center;gap:4px}
+.ldd-line .n{font-weight:400}
+.ldd-used{font-size:9px;color:#424242;margin:0 0 18px;display:flex;align-items:center;gap:5px}
+.ldd-used b{color:#242424}
+.ldd-box{border:1px solid #e1dfdd;border-radius:6px;padding:7px 10px;margin:-10px 0 18px}
+.ldd-st{display:flex;align-items:center;gap:7px;height:15px;font-size:9px;color:#424242}
+.ldd-st i{width:9px;height:9px;border-radius:50%;border:1.3px solid #13a10e;display:grid;place-items:center;flex:none}
+.ldd-st i::after{content:"";width:3px;height:2px;border:solid #13a10e;border-width:0 0 1.2px 1.2px;transform:translateY(-.5px) rotate(-45deg)}
+.ldd-st.run i{border-color:#c239b3;border-right-color:transparent;transform:rotate(calc(var(--ldd-r,0) * 1turn))}
+.ldd-st.run i::after{display:none}
+.ldd-reply{opacity:var(--ldd-rep,0);font-size:9px;line-height:1.55}
+.ldd-reply p{margin:0 0 6px}
+.ldd-reply code{font:8.5px/1 ui-monospace,Consolas,monospace}
+.ldd-cite{display:inline-grid;place-items:center;width:10px;height:10px;border-radius:2px;background:#f0f0f0;font-size:6.5px;vertical-align:1px;margin-left:2px}
+.ldd-open{color:#242424;text-decoration:underline;font-size:9px}
+.ldd-pills{display:flex;gap:6px;margin:6px 0;font-size:7.5px;color:#424242}
+.ldd-pills span{display:flex;align-items:center;gap:4px;border:1px solid #e1dfdd;border-radius:4px;padding:2px 5px}
+.ldd-fb{display:flex;gap:9px;color:#616161}
+.ldd-fb .ldd-ic{width:10px;height:10px}
+.ldd-input{margin:0 10px;height:24px;border:1px solid #d1d1d1;border-radius:6px;display:flex;align-items:center;gap:8px;padding:0 6px 0 8px;font-size:9px;color:#616161;flex:none}
+.ldd-input .ldd-q{flex:1}
+.ldd-sendb{width:12px;height:12px;border-radius:2px;background:#0f6cbd}
+.ldd-disc{flex:none;text-align:center;font-size:7.5px;color:#616161;padding:8px 0 10px}
+
+/* ---------- Step 5: file viewer + dashboard ---------- */
+.ldd-viewer{position:absolute;inset:0;background:#f5f3ed;opacity:var(--ldd-vo,0)}
+.ldd-vbar{position:absolute;left:0;right:0;top:0;height:24px;background:#292929;color:#e0e0e0;display:flex;align-items:center;gap:12px;padding:0 10px;font-size:8.5px;z-index:3}
+.ldd-vbar .ldd-ic{width:11px;height:11px}
+.ldd-vname{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:5px}
+.ldd-vr{margin-left:auto;display:flex;gap:8px;align-items:center}
+.ldd-vbtn{display:flex;align-items:center;gap:4px;border:1px solid #666;border-radius:3px;padding:2px 6px}
+.ldd-vport{position:absolute;left:0;right:0;top:24px;bottom:0;overflow:hidden}
+.ldd-zoom{position:absolute;left:0;top:0;width:1818px;transform:scale(.66);transform-origin:0 0}
+.ldd-reveal{clip-path:inset(0 0 var(--ldd-clip,0px) 0)}
+.ldd-prompts{position:absolute;right:16px;bottom:60px;display:flex;flex-direction:column;align-items:flex-end;gap:8px;z-index:3}
+.ldd-prompts span{background:#242424;color:#fff;border-radius:6px;padding:5px 9px;font-size:8px;display:flex;gap:6px;align-items:center}
+
+/* The dashboard's own design system (from references/test-output-custom-skills.html), prefixed */
+.ldd-dash{--bg:#f5f3ed;--ink:#03274a;--muted:#466786;--line:#d9dfe1;--white:#fff;--sand:#eee5d4;--aqua:#e4f3f2;--teal:#00858e;--code:#112d45;--error:#a33b28;--shadow:0 10px 32px rgba(3,39,74,.045);background:var(--bg);color:var(--ink);font:14px/1.65 Arial,Helvetica,sans-serif}
+.ldd-dash *{box-sizing:border-box}
+.ldd-dash .ldd-shell{max-width:1040px;margin:0 auto;padding:30px 20px 20px}
+.ldd-dash .ldd-topbar{display:flex;justify-content:flex-end;align-items:center;min-height:40px;margin-bottom:30px}
+.ldd-dash .ldd-pill{display:inline-block;background:var(--sand);border-radius:24px;padding:8px 13px;font-size:10px;font-weight:700;text-transform:uppercase;white-space:nowrap}
+.ldd-dash .ldd-eyebrow{font-size:10px;letter-spacing:1.25px;text-transform:uppercase;margin:0 0 10px}
+.ldd-dash h1{font-size:36px;letter-spacing:-1.3px;line-height:1.18;margin:0 0 18px}
+.ldd-dash h2{font-size:21px;line-height:1.35;margin:6px 0}
+.ldd-dash h3{font-size:15px;line-height:1.45;margin:0 0 14px}
+.ldd-dash p{margin:0 0 12px}
+.ldd-dash p:last-child{margin-bottom:0}
+.ldd-dash .ldd-intro{display:flex;align-items:center;justify-content:space-between;gap:30px;margin-bottom:24px}
+.ldd-dash .ldd-intro>p{max-width:650px;color:var(--muted);margin:0}
+.ldd-dash .ldd-meta{font-size:10px;color:var(--muted);text-align:right;flex-shrink:0}
+.ldd-dash .ldd-tabs{display:flex;gap:6px;margin-bottom:20px}
+.ldd-dash .ldd-tab{border:0;background:transparent;color:var(--ink);padding:9px 14px;border-radius:7px;font-size:12px}
+.ldd-dash .ldd-tab.on,.ldd-dash .ldd-primary{background:var(--ink);color:var(--white);font-weight:700}
+.ldd-dash .ldd-panel{background:var(--white);border:1px solid var(--line);border-radius:13px;padding:28px;box-shadow:var(--shadow)}
+.ldd-dash .ldd-off{display:none}
+.ldd-dash .ldd-section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:20px}
+.ldd-dash .ldd-section-head .ldd-eyebrow{margin:0 0 8px}
+.ldd-dash .ldd-subl{font-size:12px;color:var(--muted);margin-top:7px}
+.ldd-dash .ldd-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.ldd-dash .ldd-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.ldd-dash .ldd-card2{border:1px solid var(--line);border-radius:9px;padding:19px}
+.ldd-dash .ldd-card2 p{font-size:14px}
+.ldd-dash .ldd-number{display:flex;align-items:center;justify-content:center;width:27px;height:27px;border-radius:50%;background:var(--aqua);color:var(--teal);font-weight:700;margin-bottom:13px}
+.ldd-dash .ldd-stack{margin-top:19px}
+.ldd-dash .ldd-tinted{background:var(--aqua);border-color:#b7e2e2}
+.ldd-dash .ldd-warn{background:#fff4e0;border-color:#f0c36d}
+.ldd-dash .ldd-actions{display:flex;justify-content:flex-end;margin-top:22px}
+.ldd-dash .ldd-primary{border:0;border-radius:6px;padding:9px 14px;font-size:11px}
+.ldd-dash .ldd-hero{display:grid;grid-template-columns:1.08fr 1fr;gap:32px;align-items:center;margin-bottom:25px}
+.ldd-dash .ldd-hero h2{font-size:36px;line-height:1.07;letter-spacing:-1px;margin-bottom:18px}
+.ldd-dash .ldd-hero p{color:var(--muted);font-size:16px}
+.ldd-dash .ldd-chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:19px}
+.ldd-dash .ldd-chipl{background:var(--aqua);color:var(--teal);font-size:10px;padding:6px 10px;border-radius:18px;font-weight:700}
+.ldd-dash figure{margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg);box-shadow:0 12px 28px rgba(3,39,74,.12)}
+.ldd-dash figure img{width:100%;display:block}
+.ldd-dash figcaption{padding:9px 12px;font-size:10px;color:var(--muted)}
+.ldd-dash .ldd-deckp{margin-top:20px}
+.ldd-dash .ldd-deck{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+.ldd-dash .ldd-flip{perspective:1000px;min-height:140px;position:relative}
+.ldd-dash .ldd-flipInner{position:absolute;inset:0;transform-style:preserve-3d}
+.ldd-dash .ldd-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;padding:16px;display:flex;align-items:center;justify-content:center;text-align:center}
+.ldd-dash .ldd-front{background:var(--ink);color:var(--white)}
+.ldd-dash .ldd-back{background:var(--white);border:1px solid var(--line);transform:rotateY(180deg);color:var(--ink)}
+.ldd-w{background:#185abd}.ldd-x{background:#107c41}.ldd-p{background:#c43e1c}
+.ldd-ntools{right:427px}
+
+:root{--bg:#0b0d10;--fg:#f3f4f5;--fg-2:#c3c6cc;--fg-3:#8a8e96;--line:rgba(255,255,255,.09);--accent:#5fc9c4;--hd-font:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Roboto,Arial,sans-serif;--hd-mono:ui-monospace,SFMono-Regular,Consolas,monospace;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg-2);font:400 15px/1.55 var(--hd-font);-webkit-font-smoothing:antialiased}
+main{width:min(1040px,100% - 32px);margin:0 auto;padding:56px 0 56px}
+.kicker{margin:0 0 14px;font:500 12px/1 var(--hd-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--fg-3)}
+h1.title{margin:0;font-size:clamp(34px,6vw,56px);font-weight:600;line-height:1.02;letter-spacing:-.03em;color:var(--fg)}
+.lede{max-width:680px;margin:16px 0 34px;font-size:16.5px}
+.lede b{font-weight:600;color:var(--fg)}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-top:18px;font-size:13px;color:var(--fg-3)}
+.controls button{display:inline-flex;align-items:center;height:34px;padding:0 14px;border:0;border-radius:9px;background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 .5px var(--line);color:var(--fg);font:500 13px/1 var(--hd-font);cursor:pointer}
+.controls button:hover{background:rgba(255,255,255,.11)}
+.scrub{flex:1 1 260px;display:flex;align-items:center;gap:12px}
+.scrub input{flex:1;accent-color:var(--accent)}
+.scrub output{min-width:92px;font:500 12px/1 var(--hd-mono);font-variant-numeric:tabular-nums;color:var(--fg-2)}
+.still{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.still input{accent-color:var(--accent)}
+:is(button,input):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.note{margin:26px 0 0;font-size:13px;color:var(--fg-3)}
+.note a{color:var(--fg-2)}
+</style>
+</head>
+<body>
+<main>
+  <p class="kicker">SharePoint skill · Copilot in SharePoint</p>
+  <h1 class="title">Learning Designer</h1>
+  <p class="lede">A request is filled in a <b>structured document form</b> and saved as a Learning Request Brief. One click on <b>Create Learning Dashboard</b> asks Copilot in SharePoint to run the <b>learning-designer</b> site skill, and a self-contained, interactive HTML learning dashboard lands in the library. Drawn live in HTML, not recorded: drag the clock or pick a step.</p>
+  <div id="demo"></div>
+  <div class="controls">
+    <button type="button" id="play" aria-pressed="false">Pause</button>
+    <label class="scrub"><span class="sr">The demo's clock</span>
+      <input id="clock" type="range" min="0" max="40" step="0.01" value="0">
+      <output id="time" for="clock">0:00.0 / 0:00.0</output></label>
+    <label class="still"><input id="still" type="checkbox"> End frames (reduced motion)</label>
+  </div>
+  <p class="note">Prototype. Built with Meng To's open-source HTML Demo skill (MIT).</p>
+</main>
+<script>
+// If the host enforces Trusted Types, let this page's own static markup through
+// (all markup comes from this file; nothing user-supplied is injected).
+try { if (window.trustedTypes && !trustedTypes.defaultPolicy) trustedTypes.createPolicy('default', { createHTML: function (s) { return s; } }); } catch (e) {}
+window.LDD_HERO_SRC = "data:image/jpeg;base64,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";
+/* Vendored from MengTo/Skills html-demo (MIT, (c) 2026 Meng To).
+   Local change: the title-bar tab swatch is a class (hd-sw0..2) instead of
+   an inline style attribute, so no style="" attributes are injected (CSP).
+
+   HTML Demo's engine without a framework: the same window, clock and
+   steps' bar as StepWindow.jsx (and the same step-window.css), for a page
+   with no React. Load it with a plain <script> (it works from file://
+   too) and call HTMLDemo.mount().
+
+   A step is { id, name, dur, html, draw }. `html` is the app inside the
+   window at 1200 × 750, built once when the step starts; draw(t, $)
+   then sets every moving part from `t` alone (styles, text, classes),
+   where $(sel) finds an element in the stage. draw may return
+   { cursor: { x, y, press, hide } } to place the pointer. Nothing is left
+   to CSS transitions, so a scrub or a frozen frame is exact. */
+(function (root) {
+  const W = 1200;
+  const clamp01 = (x) => Math.min(1, Math.max(0, x));
+
+  /** How far t is through a → b, eased in and out (0 to 1). */
+  function ease(t, a, b) {
+    const x = clamp01((t - a) / (b - a));
+    return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  }
+  /** `text` as typed by t: nothing before a, all of it by b. */
+  function typed(text, t, a, b) {
+    return text.slice(0, Math.round(text.length * clamp01((t - a) / (b - a))));
+  }
+  /** The value of the last cue whose time has come ([[at, value], …]). */
+  function cue(t, cues, before) {
+    let v = before;
+    for (const [at, value] of cues) {
+      if (t < at) break;
+      v = value;
+    }
+    return v;
+  }
+  /** Whether a click landing at `at` is still pressed. */
+  const held = (t, at, len = 0.16) => t >= at && t < at + len;
+  /** The pointer at t: travels to (x, y) between `from` and `to` for each
+      [from, to, x, y] in `path` (the first is where it starts); pressed
+      at each of `clicks`. */
+  function glide(t, path, clicks = []) {
+    let [, , x, y] = path[0];
+    for (let j = 1; j < path.length; j++) {
+      const [a, b, nx, ny] = path[j];
+      if (t <= a) break;
+      const k = ease(t, a, b);
+      x += (nx - x) * k;
+      y += (ny - y) * k;
+    }
+    return { x, y, press: clicks.some((at) => held(t, at)) };
+  }
+
+  const ARROW =
+    'M5.17 5.18Q5 5 5 5.25L5 15.9Q5 16.4 5.5 16.46L8.6 16.86Q8.9 16.9 9.01 17.18L9.64 18.76Q9.95 19.55 10.76 19.29L10.84 19.26Q11.65 19 11.38 18.19L10.05 14.23Q9.95 13.95 10.25 13.91L12.8 13.57Q13.3 13.5 12.95 13.14Z';
+  const icon = (d) =>
+    `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
+  const ICONS = {
+    home: 'M4 10.5 12 4l8 6.5V20h-5.5v-6h-5v6H4z',
+    globe:
+      'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm-9 9h18M12 3c2.5 2.6 3.7 5.6 3.7 9s-1.2 6.4-3.7 9c-2.5-2.6-3.7-5.6-3.7-9S9.5 5.6 12 3z',
+    chev: 'm7 10 5 5 5-5',
+    x: 'M7 7l10 10M17 7 7 17',
+  };
+    const esc = (s) =>
+    String(s).replace(
+      /[&<>"]/g,
+      (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c],
+    );
+  const lessMotion = () =>
+    typeof matchMedia !== 'undefined' &&
+    matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /** Plays `steps` in a Mac window inside `el`. Returns its controls:
+      play(i), seek(seconds), pause(), resume(), setStill(bool), state(),
+      onChange(fn) and destroy(). */
+  function mount(
+    el,
+    { steps, tabs = [], label = 'Demo', bar = true, stageClass = '' },
+  ) {
+    const total = steps.reduce((s, x) => s + x.dur, 0);
+    let still = lessMotion();
+    let paused = false;
+    let at = { i: 0, t: still ? steps[0].dur : 0 };
+    let built = -1;
+    const listeners = new Set();
+
+    el.classList.add('hd');
+    el.innerHTML = `<figure class="hd-win">
+      <div class="hd-bar" aria-hidden="true">
+        <span class="hd-lights"><i></i><i></i><i></i></span>${icon(ICONS.home)}
+        ${tabs
+          .map(
+            (t, i) =>
+              `<span class="hd-tab${i === tabs.length - 1 ? ' on' : ''}"><b class="hd-sw${i % 3}"></b><span>${esc(t)}</span>${i === tabs.length - 1 ? icon(ICONS.x) : ''}</span>`,
+          )
+          .join('')}
+        <span class="hd-gap"></span>${icon(ICONS.globe)}${icon(ICONS.chev)}
+      </div>
+      <div class="hd-view" role="img" aria-label="${esc(label)}: ${esc(steps.map((s) => s.name).join(', '))}"></div>
+      ${
+        bar
+          ? `<ol class="hd-steps" aria-label="${esc(label)}, step by step">${steps
+              .map(
+                (s, i) =>
+                  `<li><button type="button" data-i="${i}"><span class="hd-n">${String(i + 1).padStart(2, '0')}</span><span class="hd-label">${esc(s.name)}</span><i></i></button></li>`,
+              )
+              .join('')}</ol>`
+          : ''
+      }
+    </figure>`;
+    const view = el.querySelector('.hd-view');
+    const buttons = [...el.querySelectorAll('.hd-steps button')];
+    buttons.forEach((b) =>
+      b.addEventListener('click', () => play(Number(b.dataset.i))),
+    );
+
+    // One number scales the whole stage to the window.
+    const fit = () => view.style.setProperty('--k', view.clientWidth / W);
+    const ro = new ResizeObserver(fit);
+    ro.observe(view);
+    fit();
+
+    let stage, cursor;
+    const $ = (sel) => stage.querySelector(sel);
+    function render() {
+      const step = steps[at.i];
+      if (built !== at.i) {
+        built = at.i;
+        stage = document.createElement('div');
+        stage.className = `hd-stage ${stageClass}`;
+        stage.innerHTML = step.html;
+        cursor = document.createElement('span');
+        cursor.className = 'hd-cursor';
+        cursor.style.transitionDuration = '0s, 0.3s';
+        cursor.setAttribute('aria-hidden', 'true');
+        cursor.innerHTML = `<svg width="32" height="32" viewBox="0 0 32 32" overflow="visible"><path d="${ARROW}" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="${ARROW}" fill="#000"/></svg>`;
+        stage.append(cursor);
+        view.replaceChildren(stage);
+      }
+      const out = step.draw ? step.draw(at.t, $) || {} : {};
+      const c = out.cursor;
+      cursor.hidden = !c;
+      if (c) {
+        cursor.style.transform = `translate(${c.x - 5}px, ${c.y - 5}px)`;
+        cursor.classList.toggle('press', !!c.press);
+        cursor.classList.toggle('away', !!c.hide);
+      }
+      buttons.forEach((b, i) => {
+        b.classList.toggle('on', i === at.i);
+        if (i === at.i) b.setAttribute('aria-current', 'step');
+        else b.removeAttribute('aria-current');
+        const p =
+          i === at.i ? Math.min(1, at.t / steps[i].dur) : i < at.i ? 1 : 0;
+        b.querySelector('i').style.setProperty('--p', p);
+      });
+      listeners.forEach((fn) => fn(state()));
+    }
+
+    // The clock: only on screen and in a shown tab, a quarter second at
+    // most per tick, looping; still under reduced motion.
+    let shown = false;
+    let last = performance.now();
+    const io = new IntersectionObserver(
+      ([e]) => {
+        shown = e.isIntersecting;
+        last = performance.now();
+      },
+      { threshold: 0.3 },
+    );
+    io.observe(el);
+    const timer = setInterval(() => {
+      const now = performance.now();
+      const dt = Math.min(0.25, (now - last) / 1000);
+      last = now;
+      if (still || paused || !shown || document.hidden) return;
+      let { i, t } = at;
+      t += dt;
+      if (t >= steps[i].dur) {
+        i = (i + 1) % steps.length;
+        t = 0;
+      }
+      at = { i, t };
+      render();
+    }, 40);
+
+    function play(i) {
+      at = { i, t: still ? steps[i].dur : 0 };
+      render();
+    }
+    function seek(s) {
+      let i = 0;
+      let t = Math.min(Math.max(0, s), total - 1e-3);
+      while (i < steps.length - 1 && t >= steps[i].dur) t -= steps[i++].dur;
+      at = { i, t };
+      render();
+    }
+    function state() {
+      const before = steps.slice(0, at.i).reduce((s, x) => s + x.dur, 0);
+      return { i: at.i, t: at.t, elapsed: before + at.t, total, paused, still };
+    }
+    render();
+    return {
+      play,
+      seek,
+      state,
+      pause() {
+        paused = true;
+        render();
+      },
+      resume() {
+        paused = false;
+        render();
+      },
+      setStill(on) {
+        still = on;
+        if (on) at = { i: at.i, t: steps[at.i].dur };
+        render();
+      },
+      onChange(fn) {
+        listeners.add(fn);
+        return () => listeners.delete(fn);
+      },
+      destroy() {
+        clearInterval(timer);
+        io.disconnect();
+        ro.disconnect();
+        el.replaceChildren();
+      },
+    };
+  }
+
+  root.HTMLDemo = { mount, ease, typed, cue, held, glide, W, H: 750 };
+})(globalThis);
+
+</script>
+<script>
+/* Learning Designer v2, drawn live from the owner's screen recording (privacy-safe).
+   Five steps; each draw(t) is pure in t. Wording comes from the recording's
+   stills and notes (ref/), with Megan Bowen as the demo persona. */
+(function () {
+  const { ease, typed, cue, glide, mount } = HTMLDemo;
+  const HERO = window.LDD_HERO_SRC;
+
+  const svg = (d, c = 'ldd-ic') => `<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+  const P = {
+    search: '<path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    x: '<path d="M18 6 6 18M6 6l12 12"/>',
+    dots: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+    chevd: '<path d="m6 9 6 6 6-6"/>',
+    chevr: '<path d="m9 18 6-6-6-6"/>',
+    home: '<path d="M4 10.5 12 4l8 6.5V20h-5v-6h-6v6H4z"/>',
+    compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+    pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+    build: '<rect x="4" y="4" width="16" height="6" rx="1"/><rect x="4" y="14" width="16" height="6" rx="1"/>',
+    cloud: '<path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.5 1.5A3.3 3.3 0 0 0 7 18z"/>',
+    star: '<path d="m12 4 2.4 5 5.6.6-4.2 3.8 1.2 5.6L12 16.3 7 19l1.2-5.6L4 9.6 9.6 9z"/>',
+    people: '<circle cx="9" cy="8" r="3"/><path d="M3 19a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2A5 5 0 0 1 21 19"/>',
+    share: '<path d="M12 15V3m-4 4 4-4 4 4M5 13v6h14v-6"/>',
+    link: '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+    dl: '<path d="M12 4v11m-4-4 4 4 4-4M5 20h14"/>',
+    list: '<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+    filter: '<path d="M4 6h16M7 12h10M10 18h4"/>',
+    trash: '<path d="M5 7h14M9 7V4h6v3M7 7l1 13h8l1-13"/>',
+    pin: '<path d="M9 4h6l-1 6 3 3H7l3-3zM12 13v7"/>',
+    info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+    mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+    copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
+    up: '<path d="M7 11v9H4v-9zM7 11l4-7a2 2 0 0 1 3 2l-1 4h6a2 2 0 0 1 2 2l-2 7a2 2 0 0 1-2 1H7"/>',
+    down: '<path d="M7 13V4H4v9zM7 13l4 7a2 2 0 0 0 3-2l-1-4h6a2 2 0 0 0 2-2l-2-7a2 2 0 0 0-2-1H7"/>',
+    spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>',
+    comment: '<path d="M4 5h16v11H9l-5 4z"/>',
+    expand: '<path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/>',
+    cld: '<path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4"/>',
+    single: '<rect x="3" y="7" width="18" height="10" rx="1"/><path d="M7 12h6"/>',
+    multi: '<path d="M4 7h16M4 12h16M4 17h10"/>',
+    check: '<path d="M20 6 9 17l-5-5"/>',
+    folder: '<path d="M3 6h6l2 2h10v11H3z"/>',
+  };
+  const me = 'Megan Bowen';
+  const PROMPT = 'Use the learning-designer skill on this Learning Request Brief. Read the structured fields, clone the reference template (test-output-custom-skills.html), and generate a self-contained HTML learning dashboard. Place learning-visual.png (if it exists in the same folder) in the hero image position. Keep the tabs, quizzes, control views, and JavaScript intact.';
+  const BRIEF = `learning-request-brief-template_${me}.docx`;
+  const DASH = 'Copilot in Word for Document Review Learning Dashboard.html';
+
+  function aim(stage, sel, fx = 0.55, fy = 0.6) {
+    const r = stage.getBoundingClientRect();
+    const k = r.width / 1200;
+    const b = stage.querySelector(sel).getBoundingClientRect();
+    return [(b.left - r.left + b.width * fx) / k, (b.top - r.top + b.height * fy) / k];
+  }
+  const stageOf = ($) => $('.ldd-app').parentNode;
+  function measured($, fn) {
+    const app = $('.ldd-app');
+    if (!app.__m) app.__m = fn(stageOf($));
+    return app.__m;
+  }
+  const setText = (el, s) => { if (el.textContent !== s) el.textContent = s; };
+  const setHTML = (el, s) => { if (el.__h !== s) { el.__h = s; el.innerHTML = s; } };
+
+  /* ================= Step 1: fill the form ================= */
+  // [label, multi-line?, value] — the form's 21 fields, in order.
+  const F = [
+    ['Learning topic', 0, 'Copilot in Word for Document Review'],
+    ['Target audience', 0, 'Knowledge workers who write or review documents in Word and want faster, more consistent feedback from Copilot.'],
+    ['Learning goals', 1, 'Understand how Copilot can help review a document. Use prompts and skills to get focused feedback. Apply safe boundaries so Copilot does not change approved facts or figures.'],
+    ['Stage 1 name', 0, 'Understand'],
+    ['Stage 1 description', 1, 'What Copilot can do in a Word document review'],
+    ['Stage 1 key points', 1, 'Copilot can summarize, suggest clearer wording, and check consistency. It works best with a clear request. It should not invent facts or alter approved numbers'],
+    ['Stage 2 name', 0, 'Use'],
+    ['Stage 2 description', 1, 'How to ask Copilot for useful review feedback'],
+    ['Stage 2 key points', 1, 'Open Copilot in Word. Give a focused prompt such as "Review this section for clarity and consistent terminology". Use an available skill if one exists for the type of review you need.'],
+    ['Stage 3 name', 0, 'Apply'],
+    ['Stage 3 description', 1, 'How to keep control of the final document'],
+    ['Stage 3 key points', 1, 'Review every suggestion before accepting it. Keep approved facts, figures, and claims unchanged. Use the feedback to improve the draft, then save a clean version'],
+    ['Prerequisites', 1, 'Access to Word with Copilot enabled. A document that is ready for review.'],
+    ['Authoritative source', 0, 'Microsoft guidance on Copilot in Word and common document-review practices.'],
+    ['Estimated duration', 0, '15 minutes'],
+    ['Contact', 0, 'Document owner'],
+    ['Flashcard concepts', 1, 'What can Copilot help with in a review? / Clarity, consistency, and structure. What must stay unchanged? / Approved facts, figures, and claims. When should I accept a suggestion? / Only after I have checked it against the source'],
+    ['Practice exercise', 1, 'Open a short practice document, ask Copilot to review one section for clarity, and accept or reject each suggestion.'],
+    ['Knowledge checks', 1, 'How do you keep Copilot from changing an approved number? What makes a good review prompt?'],
+    ['Next steps', 1, 'Try the same approach on a real document. Share the prompt that worked with a colleague. Create a simple skill if you review the same type of document often.'],
+    ['Success criteria', 1, 'The document is clearer and the approved facts and figures are unchanged.'],
+  ];
+  // Fill windows: the first three are typed at reading pace, the rest fast.
+  const WIN = [[0.55, 1.45], [1.6, 2.5], [2.65, 3.6]];
+  for (let j = 3, a = 3.75; j < F.length; j++, a += 0.2) WIN.push([a, a + 0.17]);
+  const LAST = WIN[WIN.length - 1][1], BOTTOM_A = LAST + 0.05, BOTTOM_B = LAST + 0.55;
+  const formHTML = `<div class="ldd-formbg"></div><div class="ldd-fscroll">
+    <div class="ldd-card">
+      <h3>learning-request-brief-template</h3>
+      <p class="ldd-priv">Hi ${me}, when you submit this form, the owner will see your name and email address.</p>
+      ${F.map(([l, m], j) => `<div class="ldd-fld" data-j="${j}"><div class="ldd-lab">${svg(m ? P.multi : P.single, '')}${l}</div><div class="ldd-in${m ? ' ml' : ''}" data-in="${j}"></div></div>`).join('')}
+      <span class="ldd-submit" data-aim="submit"><span class="ldd-spin" hidden></span><span class="ldd-sl">Submit</span></span>
+      <p class="ldd-foot">This content is created by the owner of the form. The data you submit will be sent to the Document Library owner. Never give out your password.</p>
+    </div></div>`;
+  function formMetrics($) {
+    return measured($, () => {
+      const card = $('.ldd-card');
+      const H = card.offsetTop + card.offsetHeight + 40;
+      const max = Math.max(0, H - 750);
+      // fill every field so multi-line heights are final, then measure
+      F.forEach(([, , v], j) => { $(`[data-in="${j}"]`).textContent = v; });
+      const tops = F.map((_, j) => $(`[data-j="${j}"]`).offsetTop + card.offsetTop);
+      return { max, tops: tops.map((y) => Math.min(max, Math.max(0, y - 300))) };
+    });
+  }
+  function drawFields($, t, filledAll) {
+    let active = -1;
+    F.forEach(([, , v], j) => {
+      const [a, b] = WIN[j];
+      const el = $(`[data-in="${j}"]`);
+      const done = filledAll || t >= b + 0.15;
+      const on = !filledAll && t >= a - 0.15 && t < b + 0.15;
+      if (on) active = j;
+      const s = done ? v : t >= a ? typed(v, t, a, b) : '';
+      setHTML(el, s ? s.replace(/&/g, '&amp;').replace(/</g, '&lt;') + (on ? '<span class="ldd-caret"></span>' : '') : (on ? '<span class="ldd-caret"></span>' : 'Enter value here'));
+      el.classList.toggle('ph', !s);
+      el.classList.toggle('on', on);
+    });
+    return active;
+  }
+  const FORM_STEP = {
+    id: 'form', name: 'Fill the form', dur: Math.ceil((BOTTOM_B + 1.2) * 2) / 2,
+    html: `<div class="ldd-app">${formHTML}</div>`,
+    draw(t, $) {
+      const m = formMetrics($);
+      drawFields($, t, false);
+      // scroll: follow the field being filled, then go to the bottom
+      let y = 0;
+      for (let j = 1; j < F.length; j++) {
+        const a = WIN[j][0] - 0.25;
+        y += (m.tops[j] - m.tops[j - 1]) * ease(t, a, a + 0.3);
+      }
+      y += (m.max - m.tops[F.length - 1]) * ease(t, BOTTOM_A, BOTTOM_B);
+      $('.ldd-fscroll').style.transform = `translateY(${-y}px)`;
+      const c = glide(t, [[0, 0, 700, 330], [0.1, 0.45, 560, 186], [0.8, 1.2, 900, 420]], [0.4]);
+      return { cursor: { ...c, hide: t > 1.1 } };
+    },
+  };
+
+  /* ================= Step 2: submit ================= */
+  const SUB_AT = 1.0, BUSY_B = 2.3, THANK_A = 2.45, CHECK_A = 2.6, CHECK_B = 3.6;
+  const SUBMIT_STEP = {
+    id: 'submit', name: 'Submit', dur: 5,
+    html: `<div class="ldd-app">${formHTML}
+      <div class="ldd-thanks" hidden>
+        <svg viewBox="0 0 100 100"><defs><linearGradient id="ldd-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9fe3c2"/><stop offset=".55" stop-color="#d9e34a"/><stop offset="1" stop-color="#c25ad6"/></linearGradient></defs>
+          <circle class="ldd-ring" cx="50" cy="50" r="38" fill="none" stroke="url(#ldd-g)" stroke-width="9" stroke-linecap="round" pathLength="100" stroke-dasharray="100 100" transform="rotate(-90 50 50)"/>
+          <path class="ldd-tick" d="M34 51l11 11 21-23" fill="none" stroke="#0e5a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" pathLength="100" stroke-dasharray="100 100"/></svg>
+        <h4>Thank you</h4><p>Your response has been submitted!</p><span class="ldd-again">Submit another response</span>
+      </div></div>`,
+    draw(t, $) {
+      const m = formMetrics($);
+      drawFields($, t, true);
+      $('.ldd-fscroll').style.transform = `translateY(${-m.max}px)`;
+      const busy = t >= SUB_AT + 0.08 && t < BUSY_B + 0.4;
+      const sb = $('.ldd-submit');
+      sb.classList.toggle('busy', busy);
+      sb.classList.toggle('press', t >= SUB_AT && t < SUB_AT + 0.16);
+      $('.ldd-spin').hidden = !busy;
+      $('.ldd-spin').style.setProperty('--ldd-r', (t * 1.4) % 1);
+      setText($('.ldd-sl'), busy ? 'Submitting...' : 'Submit');
+      const gone = ease(t, BUSY_B, THANK_A);
+      $('.ldd-fscroll').style.opacity = 1 - gone;
+      const th = $('.ldd-thanks');
+      th.hidden = t < THANK_A;
+      th.style.opacity = ease(t, THANK_A, THANK_A + 0.3);
+      $('.ldd-ring').setAttribute('stroke-dashoffset', 100 - 100 * ease(t, CHECK_A, CHECK_A + 0.7));
+      $('.ldd-tick').setAttribute('stroke-dashoffset', 100 - 100 * ease(t, CHECK_A + 0.55, CHECK_B));
+      const target = aimSubmit($, m);
+      const c = glide(t, [[0, 0, 820, 520], [0.2, 0.75, ...target], [2.1, 2.7, 712, 110]], [SUB_AT]);
+      return { cursor: { ...c, hide: t > 2.4 && t < 2.6 } };
+    },
+  };
+  function aimSubmit($, m) {
+    const s = $('.ldd-submit'), card = $('.ldd-card');
+    return [card.offsetLeft + s.offsetLeft + s.offsetWidth * 0.5, card.offsetTop + s.offsetTop + s.offsetHeight * 0.6 - m.max];
+  }
+
+  /* ================= Library + Copilot pane (steps 3–4) ================= */
+  const FILES = [
+    ['doc', BRIEF, 'A few seconds ago', 'brief'],
+    ['png', 'learning-visual.png', '3 days ago'],
+    ['htm', 'Microsoft Lists for Team Tracking Learning Dashboard.html', '3 days ago'],
+    ['doc', 'sample-learning-request-brief-custom-skills-powerpoint.docx', '3 days ago'],
+    ['doc', 'sample-learning-request-brief-microsoft-lists.docx', '10 minutes ago'],
+  ];
+  const row = ([kind, name, mod, id]) => `<div class="ldd-rowl"${id ? ` data-row="${id}"` : ''}>
+      <span class="ldd-c0"><i class="ldd-radio">${svg(P.check, '')}</i></span>
+      <span class="ldd-c1"><i class="ldd-ft ${kind}"></i><em>${name}</em>${id === 'brief' ? `<span class="ldd-rowacts" data-acts>${svg(P.dots, 'ldd-ic sm')}${svg(P.share, 'ldd-ic sm')}</span>` : ''}</span>
+      <span class="ldd-c2" data-mod>${mod}</span>
+      <span class="ldd-c3"><span class="ldd-who">${me}</span></span>
+      <span class="ldd-c4"><span class="ldd-cld"${id ? ` data-cld="${id}"` : ''}>${svg(P.cld, 'ldd-ic sm')}Create Learning Dashboard</span></span>
+    </div>`;
+  const library = `
+    <div class="ldd-suite"><span class="ldd-waffle">${'<i></i>'.repeat(9)}</span><span class="ldd-wordmark">SharePoint</span>
+      <span class="ldd-search">${svg(P.search, 'ldd-ic sm')}Search this library</span>
+      <span class="ldd-suite-r">${svg(P.comment, 'ldd-ic sm')}${svg(P.people, 'ldd-ic sm')}${svg(P.spark, 'ldd-ic sm')}<b>?</b>${me}<span class="ldd-av">MB</span></span></div>
+    <div class="ldd-rail">
+      <span>${svg(P.home)}Home</span><span>${svg(P.compass)}Discover</span><span>${svg(P.pen)}Publish</span><span>${svg(P.build)}Build</span><span>${svg(P.cloud)}OneDrive</span>
+    </div>
+    <div class="ldd-main">
+      <div class="ldd-banner"><span class="ldd-sitelogo"></span><h2>Copilot in SharePoint</h2>
+        <span class="ldd-bnav"><span>Home</span><span>Reports</span><span>Learning Progress</span></span>
+        <span class="ldd-bswirl"></span>
+        <span class="ldd-bright"><span>${svg(P.star, 'ldd-ic sm')}Following</span><span>${svg(P.people, 'ldd-ic sm')}Site access</span></span></div>
+      <div class="ldd-libwide">
+        <div class="ldd-crumb">Learning Designer ${svg(P.chevr)} <b>Learning design requests</b>${svg(P.chevd, 'ldd-ic sm')}</div>
+        <div class="ldd-tools"><span class="ldd-tb">${svg(P.share, 'ldd-ic sm')}Share</span><span class="ldd-tb">${svg(P.link, 'ldd-ic sm')}Copy link</span><span class="ldd-tb"><i class="ldd-logo sm"></i>Copilot ${svg(P.chevd, 'ldd-ic sm')}</span><span class="ldd-tb">Add shortcut to OneDrive ${svg(P.chevd, 'ldd-ic sm')}</span><span class="ldd-tb">Forms</span><span class="ldd-tb">${svg(P.dl, 'ldd-ic sm')}Download</span><span class="ldd-tb">${svg(P.dots, 'ldd-ic sm')}</span><span class="ldd-create">${svg(P.plus, 'ldd-ic sm')}Create or upload</span></div>
+        <div class="ldd-views"><span class="ldd-tb ldd-vsel">${svg(P.list, 'ldd-ic sm')}All Documents</span><span class="ldd-tb">${svg(P.list, 'ldd-ic sm')}learning-request-brief-template view</span><span class="ldd-tb">${svg(P.plus, 'ldd-ic sm')}Add view</span>${svg(P.filter, 'ldd-ic sm')}<i class="ldd-oi ldd-w">W</i><i class="ldd-oi ldd-x">X</i><i class="ldd-oi ldd-p">P</i></div>
+      </div>
+      <div class="ldd-libnarrow" hidden>
+        <div class="ldd-crumb">${svg(P.folder)}${svg(P.chevr, 'ldd-ic sm')}<b>Learning design requests</b>${svg(P.chevd, 'ldd-ic sm')}</div>
+        <div class="ldd-tools ldd-ntools"><span class="ldd-create">${svg(P.plus, 'ldd-ic sm')}Create or upload</span></div>
+        <div class="ldd-sel-tools"><span><i class="ldd-ft doc"></i>Open ${svg(P.chevd, 'ldd-ic sm')}</span><span>${svg(P.share, 'ldd-ic sm')}Share</span><span>${svg(P.link, 'ldd-ic sm')}Copy link</span><span><i class="ldd-logo sm"></i>Copilot ${svg(P.chevd, 'ldd-ic sm')}</span><span>${svg(P.trash, 'ldd-ic sm')}Delete</span><span>${svg(P.pin, 'ldd-ic sm')}Pin to top</span><span>${svg(P.star, 'ldd-ic sm')}Add to favorites</span><span>${svg(P.dots, 'ldd-ic sm')}</span><span>${svg(P.x, 'ldd-ic sm')}1 selected</span><span>${svg(P.info, 'ldd-ic sm')}Details</span></div>
+      </div>
+      <div class="ldd-grid">
+        <div class="ldd-rowl head" data-y="0"><span class="ldd-c1">${svg(P.list, 'ldd-ic sm')}Name ${svg(P.chevd, 'ldd-ic sm')}</span><span class="ldd-c2">Modified ${svg(P.chevd, 'ldd-ic sm')}</span><span class="ldd-c3">Modified By ${svg(P.chevd, 'ldd-ic sm')}</span><span class="ldd-c4">Create Learning Dashboard ${svg(P.chevd, 'ldd-ic sm')}</span><span class="ldd-c5">${svg(P.plus, 'ldd-ic sm')}Add column</span></div>
+        <div class="ldd-rows">
+          ${row(['htm', DASH, 'A few seconds ago', 'dash'])}
+          ${FILES.map(row).join('')}
+        </div>
+        <div class="ldd-hscroll" hidden></div>
+      </div>
+      <span class="ldd-fab" data-aim="fab"><i class="ldd-logo"></i></span>
+    </div>`;
+  const pane = `<aside class="ldd-pane">
+      <div class="ldd-ph"><i class="ldd-logo sm"></i>Copilot<span class="ldd-r">${svg(P.dots, 'ldd-ic sm')}${svg(P.x, 'ldd-ic sm')}</span></div>
+      <div class="ldd-pv"><div class="ldd-pc">
+        <div class="ldd-hi">Hello ${me}!</div>
+        <p class="ldd-welcome">Welcome! Enhance your productivity with this agent. Start a conversation by asking a question or selecting one of the suggested prompts.</p>
+        <div><span class="ldd-sugg">Summarize this file</span></div><div><span class="ldd-sugg">Search for specific information</span></div><div><span class="ldd-sugg">Summarize recent updates</span></div>
+        <div class="ldd-bubble" data-k="bubble">${PROMPT}</div>
+        <div data-k="bot">
+          <div class="ldd-who2"><i class="ldd-logo sm"></i>Copilot</div>
+          <p class="ldd-custom">This chat experience was customized for this site by <u>SHAREPOINT.md</u></p>
+          <div class="ldd-think" data-k="think"><i class="ldd-dot"></i><span data-k="thinktext">Thinking...</span>${svg(P.chevr, 'ldd-ic sm')}</div>
+          <div class="ldd-line" data-k="r1">Reasoning completed in 1 step ${svg(P.chevr, 'ldd-ic sm')}</div>
+          <div class="ldd-used" data-k="used">Used site skill <i class="ldd-ft htm"></i><b>learning-designer</b></div>
+          <div class="ldd-line" data-k="r5"><span data-k="r5t">Constructing precise HTML output</span> ${svg(P.chevd, 'ldd-ic sm')}</div>
+          <div class="ldd-box" data-k="box">${['Preparing reference mappings', 'Preparing to use file and output tools', 'Planning image data extraction', 'Planning complex HTML generation', 'Constructing precise HTML output']
+            .map((s, j) => `<div class="ldd-st" data-s="${j}"><i></i>${s}</div>`).join('')}</div>
+          <div class="ldd-reply" data-k="reply">
+            <p>Created the self-contained learning dashboard for <b>Copilot in Word for Document Review</b> with three stages, flip-card checks, control views, tabs, and inline JavaScript. I embedded <code>learning-visual.png</code> in the hero. <span class="ldd-cite">1</span><span class="ldd-cite">2</span></p>
+            <span class="ldd-open" data-aim="openlink">Open the learning dashboard</span>
+            <div class="ldd-pills"><span>1 <i class="ldd-ft doc"></i>learning-request-brie…</span><span>2 ${svg(P.link, 'ldd-ic sm')}learning-visual.png</span><span>+1</span></div>
+            <div class="ldd-fb">${svg(P.copy)}${svg(P.up)}${svg(P.down)}</div>
+          </div>
+        </div>
+      </div></div>
+      <div class="ldd-input">${svg(P.plus, 'ldd-ic sm')}<span class="ldd-q">Ask a question about this file</span>${svg(P.mic, 'ldd-ic sm')}<i class="ldd-sendb"></i></div>
+      <div class="ldd-disc">AI-generated content may be incorrect</div>
+    </aside>`;
+  const ROW_H = 31, HEAD_H = 28;
+  // Lays the library out: rows in order, the selected one, pane open or not.
+  function drawLibrary($, { dash, newBrief, sel, paneOpen, flash = 0, briefMod = 'A few seconds ago' }) {
+    const order = [];
+    if (dash > 0) order.push('dash');
+    order.push(...['brief', 1, 2, 3, 4]);
+    const rows = [...$('.ldd-rows').children];
+    const ids = ['dash', 'brief', 1, 2, 3, 4];
+    rows.forEach((r, i) => {
+      const id = ids[i];
+      let k = order.indexOf(id);
+      const hide = (id === 'dash' && dash <= 0) || (id === 'brief' && newBrief <= 0);
+      if (id !== 'dash' && id !== 'brief' && newBrief <= 0) k -= 1;
+      r.hidden = hide;
+      r.style.top = `${HEAD_H + k * ROW_H}px`;
+      r.style.opacity = id === 'dash' ? dash : id === 'brief' ? newBrief : 1;
+      r.classList.toggle('sel', id === 'brief' && sel);
+    });
+    $('[data-row="brief"]').style.setProperty('--ldd-flash', flash);
+    setText($('[data-row="brief"] [data-mod]'), briefMod);
+    $('[data-row="dash"]').style.setProperty('--ldd-flash', dash > 0 ? Math.max(0, 1 - dash) : 0);
+    $('[data-acts]').hidden = !sel && flash < 0.01;
+    $('.ldd-libwide').hidden = paneOpen;
+    $('.ldd-libnarrow').hidden = !paneOpen;
+    $('.ldd-grid').style.right = paneOpen ? `${1200 - 52 - 9 - 720}px` : '14px';
+    $('.ldd-hscroll').hidden = !paneOpen;
+    $('.ldd-hscroll').style.width = '480px';
+    const fab = $('.ldd-fab');
+    fab.style.left = paneOpen ? '674px' : '1088px';
+    fab.style.top = paneOpen ? '624px' : '660px';
+  }
+  // The pane's chat state from t-derived flags; scrolls to keep the latest in view.
+  function drawPane($, s) {
+    const pane = $('.ldd-pane');
+    pane.style.setProperty('--ldd-open', s.open);
+    $('[data-k="bubble"]').hidden = !s.bubble;
+    $('[data-k="bot"]').hidden = !s.bot;
+    $('[data-k="think"]').hidden = !s.think;
+    setText($('[data-k="thinktext"]'), s.thinkText || 'Thinking...');
+    $('[data-k="think"]').style.setProperty('--ldd-pulse', s.pulse || 0);
+    $('[data-k="r1"]').hidden = !s.r1;
+    $('[data-k="used"]').hidden = !s.used;
+    $('[data-k="r5"]').hidden = !s.box;
+    $('[data-k="box"]').hidden = !s.box;
+    setText($('[data-k="r5t"]'), s.r5Text || '');
+    [...$('[data-k="box"]').children].forEach((el, j) => {
+      el.hidden = j > s.stepI;
+      el.className = 'ldd-st' + (j === s.stepI && !s.allDone ? ' run' : '');
+      el.style.setProperty('--ldd-r', s.spin || 0);
+    });
+    $('[data-k="reply"]').hidden = !s.reply;
+    $('[data-k="reply"]').style.setProperty('--ldd-rep', s.reply || 0);
+    const pc = $('.ldd-pc'), pv = $('.ldd-pv');
+    const over = Math.max(0, pc.offsetHeight - pv.offsetHeight);
+    pc.style.transform = `translateY(${-over}px)`;
+    return over;
+  }
+
+  /* ================= Step 3: create dashboard ================= */
+  const NEW_A = 0.35, NEW_B = 0.8, BTN_AT = 2.0, PANE_A = 2.1, PANE_B = 2.45, BUBBLE_AT = 2.9, BOT_AT = 3.5;
+  const CREATE_STEP = {
+    id: 'create', name: 'Create dashboard', dur: 6.5,
+    html: `<div class="ldd-app">${library}${pane}</div>`,
+    draw(t, $) {
+      const m = measured($, (s) => {
+        drawLibrary($, { dash: 0, newBrief: 1, sel: false, paneOpen: false });
+        return { btn: aim(s, '[data-cld="brief"]', 0.5, 0.55) };
+      });
+      const paneOpen = t >= BTN_AT + 0.08;
+      drawLibrary($, {
+        dash: 0, newBrief: ease(t, NEW_A, NEW_B), sel: paneOpen, paneOpen,
+        flash: ease(t, NEW_A, NEW_B) * (1 - ease(t, 1.4, 2.0)),
+      });
+      $('[data-cld="brief"]').classList.toggle('press', t >= BTN_AT && t < BTN_AT + 0.18);
+      drawPane($, {
+        open: ease(t, PANE_A, PANE_B), bubble: t >= BUBBLE_AT, bot: t >= BOT_AT, think: t >= BOT_AT,
+        pulse: (Math.sin(t * 6) + 1) / 2, stepI: -1,
+      });
+      const c = glide(t, [[0, 0, 520, 520], [0.9, 1.6, ...m.btn], [2.4, 3.0, 640, 520]], [BTN_AT]);
+      return { cursor: { ...c, hide: t > 2.9 } };
+    },
+  };
+
+  /* ================= Step 4: the skill runs ================= */
+  const R1_AT = 0.7, USED_AT = 1.3, BOX_AT = 1.9, ST = [1.9, 2.7, 3.5, 4.3, 5.1], ALL_AT = 5.9,
+    DASH_A = 6.0, DASH_B = 6.4, REPLY_A = 6.3, REPLY_B = 6.8, LINK_AT = 8.6;
+  const STEPS5 = ['Preparing reference mappings', 'Preparing to use file and output tools', 'Planning image data extraction', 'Planning complex HTML generation', 'Constructing precise HTML output'];
+  const RUN_STEP = {
+    id: 'run', name: 'Skill runs', dur: 9.2,
+    html: `<div class="ldd-app">${library}${pane}</div>`,
+    draw(t, $) {
+      drawLibrary($, {
+        dash: ease(t, DASH_A, DASH_B), newBrief: 1, sel: true, paneOpen: true,
+        briefMod: t >= DASH_A ? 'About a minute ago' : 'A few seconds ago',
+      });
+      const stepI = cue(t, ST.map((a, j) => [a, j]), -1);
+      const allDone = t >= ALL_AT;
+      const s = {
+        open: 1, bubble: true, bot: true,
+        think: t < BOX_AT, thinkText: t < R1_AT ? 'Thinking...' : 'Preparing reference mappings',
+        pulse: (Math.sin(t * 6) + 1) / 2,
+        r1: t >= R1_AT, used: t >= USED_AT, box: t >= BOX_AT, stepI: allDone ? 4 : stepI, allDone,
+        r5Text: allDone ? 'Reasoning completed in 5 steps' : STEPS5[Math.max(0, stepI)],
+        spin: (t * 1.3) % 1, reply: ease(t, REPLY_A, REPLY_B),
+      };
+      // the "Preparing…" line between "Used site skill" and the box (as in still 12)
+      if (t >= USED_AT && t < BOX_AT) s.think = true;
+      drawPane($, s);
+      const m = t >= REPLY_A ? aim(stageOf($), '[data-aim="openlink"]', 0.45, 0.6) : [1000, 600];
+      const c = glide(t, [[0, 0, 990, 640], [7.6, 8.3, ...m]], [LINK_AT]);
+      return { cursor: { ...c, hide: t < 7.4 } };
+    },
+  };
+
+  /* ================= Step 5: open the page ================= */
+  const TABS = ['Overview', '1. Understand', '2. Use', '3. Apply'];
+  const CARDS = [
+    ['What can Copilot help with in a review?', 'Clarity, consistency, and structure.'],
+    ['What must stay unchanged?', 'Approved facts, figures, and claims.'],
+    ['When should you accept a suggestion?', 'Only after you have checked it against the source.'],
+    ['How do you protect an approved number?', 'Tell Copilot that approved facts, figures, and claims must not change, and check every suggestion.'],
+    ['What makes a good review prompt?', 'A focused request, such as reviewing one section for clarity and consistent terminology.'],
+  ];
+  const dash = `<div class="ldd-dash"><div class="ldd-shell">
+    <div class="ldd-topbar"><span class="ldd-pill">Word learning module</span></div>
+    <p class="ldd-eyebrow">Copilot / Document productivity</p>
+    <h1>Copilot in Word for Document Review</h1>
+    <div class="ldd-intro"><p>Learn to get focused review feedback while keeping control of approved facts, figures, and claims.</p>
+      <div class="ldd-meta">Estimated time: 15 minutes<br>Learning path: 3 stages</div></div>
+    <nav class="ldd-tabs">${TABS.map((x, j) => `<span class="ldd-tab" data-tab="${j}">${x}</span>`).join('')}</nav>
+    <section class="ldd-panel" data-p="0">
+      <div class="ldd-hero"><div>
+        <p class="ldd-eyebrow">Copilot / Document productivity</p>
+        <h2>Review with focus. Keep control.</h2>
+        <p>Copilot can help you review a document for clarity, consistency, and structure when you give it a clear request and validate every suggestion.</p>
+        <div class="ldd-chips"><span class="ldd-chipl">Clearer drafts</span><span class="ldd-chipl">Focused prompts</span><span class="ldd-chipl">Approved facts protected</span></div>
+      </div><figure><img src="${HERO}" alt=""><figcaption>Overview</figcaption></figure></div>
+      <div class="ldd-grid3">
+        <article class="ldd-card2"><span class="ldd-number">1</span><h3>Understand</h3><p>Know what Copilot can support in a Word document review.</p></article>
+        <article class="ldd-card2"><span class="ldd-number">2</span><h3>Use</h3><p>Ask for useful feedback with a focused review prompt.</p></article>
+        <article class="ldd-card2"><span class="ldd-number">3</span><h3>Apply</h3><p>Evaluate suggestions and protect approved content.</p></article>
+      </div>
+      <div class="ldd-actions"><span class="ldd-primary">Start learning</span></div>
+    </section>
+    <section class="ldd-panel ldd-off" data-p="1">
+      <div class="ldd-section-head"><div><p class="ldd-eyebrow">1. Understand</p><h2>What Copilot can do in a Word document review</h2><p class="ldd-subl">Copilot can summarize, suggest clearer wording, and check consistency.</p></div><span class="ldd-pill">Before you start</span></div>
+      <div class="ldd-grid3">
+        <article class="ldd-card2"><span class="ldd-number">1</span><h3>Clarity</h3><p>Use it to identify wording that may be difficult to follow.</p></article>
+        <article class="ldd-card2"><span class="ldd-number">2</span><h3>Consistency</h3><p>Ask it to look for inconsistent terminology or structure.</p></article>
+        <article class="ldd-card2"><span class="ldd-number">3</span><h3>Boundaries</h3><p>It shouldn’t invent facts or alter approved numbers.</p></article>
+      </div>
+      <div class="ldd-grid2 ldd-stack">
+        <article class="ldd-card2 ldd-tinted"><h3>Prerequisites</h3><p>Access to Word with Copilot enabled and a document ready for review.</p></article>
+        <article class="ldd-card2 ldd-warn"><h3>Source check</h3><p>Use Microsoft guidance on Copilot in Word and your organization’s document-review practices to verify feature availability and process requirements.</p></article>
+      </div>
+      <div class="ldd-actions"><span class="ldd-primary">Next: Use Copilot</span></div>
+    </section>
+    <section class="ldd-panel ldd-deckp" data-k="deck">
+      <div class="ldd-section-head"><div><p class="ldd-eyebrow">Check</p><h2>Flip the cards</h2></div></div>
+      <div class="ldd-deck">${CARDS.map(([q, a], j) => `<div class="ldd-flip" data-card="${j}"><div class="ldd-flipInner"><div class="ldd-face ldd-front">${q}</div><div class="ldd-face ldd-back">${a}</div></div></div>`).join('')}</div>
+    </section>
+  </div></div>`;
+  const VIEW_A = 0.05, VIEW_B = 0.3, LOAD_B = 0.7, REV_A = 0.7, REV_B = 1.9, TAB_AT = 3.2, SC_A = 4.4, SC_B = 5.3, FLIP_A = 6.2, FLIP_B = 6.75;
+  const Z = 0.66;
+  const OPEN_STEP = {
+    id: 'open', name: 'Open the page', dur: 9.5,
+    html: `<div class="ldd-app"><div class="ldd-viewer">
+      <div class="ldd-vbar">${svg(P.pin)}${svg(P.dl)}${svg(P.star)}${svg(P.trash)}${svg(P.info)}${svg(P.expand)}${svg(P.dots)}
+        <span class="ldd-vname"><i class="ldd-ft htm"></i>Copilot in …hboard.html</span>
+        <span class="ldd-vr">${svg(P.comment)}<span class="ldd-vbtn">${svg(P.link)}Open ${svg(P.chevd)}</span><span class="ldd-vbtn">${svg(P.share)}Share ${svg(P.chevd)}</span>${svg(P.x)}</span></div>
+      <div class="ldd-vport"><div class="ldd-zoom ldd-reveal">${dash}</div></div>
+      <div class="ldd-prompts" data-k="prompts"><span>${svg(P.spark, 'ldd-ic sm')}Summarize this document</span><span>${svg(P.spark, 'ldd-ic sm')}Create an FAQ from this document</span><span>${svg(P.spark, 'ldd-ic sm')}What can Copilot do?</span></div>
+      <span class="ldd-fab" data-k="vfab"><i class="ldd-logo"></i></span>
+    </div></div>`,
+    draw(t, $) {
+      const st = stageOf($);
+      const zoom = $('.ldd-zoom');
+      const setTab = (i) => {
+        zoom.querySelectorAll('[data-p]').forEach((p) => p.classList.toggle('ldd-off', +p.dataset.p !== i));
+        zoom.querySelectorAll('.ldd-tab').forEach((x) => x.classList.toggle('on', +x.dataset.tab === i));
+      };
+      const m = measured($, (s) => {
+        zoom.style.transform = `scale(${Z})`;
+        setTab(0);
+        const tab = aim(s, '.ldd-tab[data-tab="1"]');
+        setTab(1);
+        const deckTop = $('[data-k="deck"]').offsetTop * Z;
+        const total = zoom.offsetHeight * Z;
+        const scroll = Math.max(0, Math.min(total - 726, deckTop - 300));
+        const card = aim(s, '[data-card="1"]', 0.5, 0.5);
+        return { tab, scroll, card: [card[0], card[1] - scroll] };
+      });
+      const v = $('.ldd-viewer');
+      v.style.setProperty('--ldd-vo', ease(t, VIEW_A, VIEW_B));
+      const fab = $('[data-k="vfab"]');
+      fab.style.left = '1146px'; fab.style.top = '700px';
+      const u = t >= TAB_AT + 0.08;
+      setTab(u ? 1 : 0);
+      const y = u ? m.scroll * ease(t, SC_A, SC_B) : 0;
+      zoom.style.transform = `translateY(${-y}px) scale(${Z})`;
+      // blank while loading, then draws in from the top
+      const r = t < LOAD_B ? 0 : ease(t, REV_A, REV_B);
+      const fullH = zoom.offsetHeight;
+      zoom.style.setProperty('--ldd-clip', `${Math.max(0, fullH - (r * 760 + y) / Z)}px`);
+      $('[data-k="prompts"]').style.opacity = ease(t, REV_B, REV_B + 0.4);
+      const f = ease(t, FLIP_A, FLIP_B);
+      zoom.querySelectorAll('.ldd-flipInner').forEach((el, j) => { el.style.transform = j === 1 ? `rotateY(${180 * f}deg)` : ''; });
+      const c = glide(t, [[0, 0, 900, 600], [2.3, 2.95, ...m.tab], [5.4, 6.1, ...m.card]], [TAB_AT]);
+      void st;
+      return { cursor: { ...c, hide: t < 2.1 } };
+    },
+  };
+
+  const STEPS = [FORM_STEP, SUBMIT_STEP, CREATE_STEP, RUN_STEP, OPEN_STEP];
+  window.LDD_STEPS = STEPS;
+  window.LDD_mount = (el) => mount(el, {
+    steps: STEPS,
+    tabs: ['Copilot in SharePoint'],
+    label: 'Learning Designer: a Learning Request Brief form becomes an interactive learning dashboard with Copilot in SharePoint',
+  });
+})();
+
+</script>
+<script>
+(function () {
+  var demo = window.LDD_mount(document.getElementById('demo'));
+  window.__hd = demo; // for scripts/shoot.mjs --frozen and tests
+
+  // State in the URL hash only (no storage): #step=3, #t=12.5, #still
+  function readHash() {
+    var h = (location.hash || '').slice(1), q = {};
+    h.split('&').forEach(function (kv) { if (!kv) return; var p = kv.split('='); q[p[0]] = p.length > 1 ? decodeURIComponent(p[1]) : true; });
+    return q;
+  }
+  function writeHash(v) {
+    try { if (location.hash !== '#' + v) location.replace('#' + v); } catch (e) { /* sandboxed: ignore */ }
+  }
+  function applyHash() {
+    var q = readHash();
+    if ('still' in q) { demo.setStill(true); }
+    if (q.step) { var i = Math.max(1, Math.min(window.LDD_STEPS.length, parseInt(q.step, 10) || 1)) - 1; demo.play(i); }
+    else if (q.t) { demo.seek(parseFloat(q.t) || 0); if (!demo.state().still) demo.pause(); }
+  }
+  window.addEventListener('hashchange', applyHash);
+
+  var play = document.getElementById('play'), clock = document.getElementById('clock'),
+      time = document.getElementById('time'), still = document.getElementById('still');
+  var fmt = function (s) { return Math.floor(s / 60) + ':' + (s % 60).toFixed(1).padStart(4, '0'); };
+  clock.max = demo.state().total;
+  demo.onChange(function (s) {
+    clock.value = s.elapsed;
+    time.value = fmt(s.elapsed) + ' / ' + fmt(s.total);
+    play.textContent = s.paused ? 'Play' : 'Pause';
+    play.setAttribute('aria-pressed', String(s.paused));
+    still.checked = s.still;
+  });
+  play.addEventListener('click', function () { demo.state().paused ? demo.resume() : demo.pause(); });
+  clock.addEventListener('input', function () { var s = Number(clock.value); demo.pause(); demo.seek(s); });
+  still.addEventListener('change', function () { demo.setStill(still.checked); });
+  document.querySelectorAll('.hd-steps button').forEach(function (b) {
+    b.addEventListener('click', function () { writeHash('step=' + (Number(b.dataset.i) + 1)); });
+  });
+  demo.resume();
+  applyHash();
+})();
+</script>
+</body>
+</html>

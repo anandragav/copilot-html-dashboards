@@ -52,6 +52,8 @@ hr.div{border:none;border-top:1px solid var(--line);margin-block:32px}
 .card{border:1px solid var(--line);border-radius:20px;padding:18px;background:#fff;box-shadow:0 8px 24px rgba(3,39,74,.06)}
 .card h3{margin:8px 0;font-size:19px}
 .card p,.card li{color:#333;line-height:1.45}
+.card img.shot{display:block;inline-size:100%;height:auto;border-radius:12px;margin:0 0 12px;border:1px solid var(--line);background:var(--ice)}
+.gallery{align-items:start}
 .card .tag{display:inline-block;background:#EAF2FA;color:var(--blue);border-radius:999px;padding:4px 10px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;margin-block-end:8px}
 .icon{inline-size:44px;block-size:44px;border-radius:16px;background:#EAF2FA;display:grid;place-items:center;color:var(--blue);font-weight:900;font-size:20px}
 .pill{display:inline-block;background:#EAF2FA;color:var(--blue);border:1px solid var(--pale);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;margin:0 6px 6px 0}
@@ -411,7 +413,7 @@ details .body{display:block}
   <div class="note"><p><b>Gallery note.</b> Individual dashboards live as their own folders in this repository, each with an <code>index.html</code>. This overview page is the front door. New examples are added the same way: a folder, plus a short card and a direct link here.</p></div>
 
   <h3>Dashboards in this collection</h3>
-  <div class="grid cols3">
+  <div class="grid cols3 gallery">
     <div class="card">
       <span class="tag">Analytics</span>
       <h3>Intranet Analytics — Fictional Demo</h3>
@@ -441,6 +443,13 @@ details .body{display:block}
       <h3>How We Co-Created the Custom Skills Learning Experience</h3>
       <p>The story behind the Custom Skills in PowerPoint module: how authoritative guidance became an interactive learning journey, the method and feedback that shaped it, and a reusable starter prompt for building your own.</p>
       <p><a href="co-created-custom-skills-learning/">Open the dashboard</a> &middot; <a href="co-created-custom-skills-learning/how-we-co-created-the-custom-skills-learning-experience.docx" download>Download the Word version</a></p>
+    </div>
+    <div class="card">
+      <a href="learning-designer-demo-loop/"><img class="shot" src="learning-designer-demo-loop/thumb.png" width="1936" height="1376" alt="Learning Designer demo at the skill-runs step: Copilot in SharePoint with the learning-designer skill open. Fictional persona Megan Bowen."></a>
+      <span class="tag">Demo</span>
+      <h3>Learning Designer: from request form to dashboard</h3>
+      <p>Animated demo loop of the Learning Designer skill: a learning request form becomes an interactive HTML learning dashboard via Copilot in SharePoint. Fictional demo persona.</p>
+      <p><a href="learning-designer-demo-loop/">Open the dashboard</a></p>
     </div>
   </div>
 </section>

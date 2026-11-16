@@ -21,12 +21,24 @@ a{color:var(--dark-green);font-weight:700;text-decoration-thickness:1.5px;text-u
 a:hover{color:var(--dark-green);text-decoration-thickness:2px}
 .skip{position:absolute;inset-inline-start:16px;inset-block-start:16px;background:var(--dark-green);color:var(--text);padding:10px 14px;border-radius:8px;z-index:10;text-decoration:none;font-weight:700}
 .skip:not(:focus){clip:rect(0 0 0 0);clip-path:inset(50%);inline-size:1px;block-size:1px;overflow:hidden;white-space:nowrap}
-.wrap{max-inline-size:1180px;margin-inline:auto;padding:0 24px 64px}
+.wrap{max-inline-size:1180px;margin-inline:auto;padding:0 24px 40px}
 
 header.site{background:var(--dark-green);color:var(--text);margin-block-end:36px}
-header.site .inner{max-inline-size:1180px;margin-inline:auto;padding:40px 24px 36px}
+header.site .inner{max-inline-size:1180px;margin-inline:auto;padding:40px 24px 36px;display:flex;align-items:center;justify-content:space-between;gap:16px 28px}
+.brand{min-inline-size:0;flex:1}
 header.site h1{margin:0;font-size:clamp(1.75rem,3.2vw,2.5rem);letter-spacing:-.03em;line-height:1.15;color:var(--text);font-weight:700}
-header.site p{margin:10px 0 0;font-size:1.125rem;font-weight:600;color:var(--light-tint);max-inline-size:40rem;line-height:1.4}
+header.site .brand p{margin:10px 0 0;font-size:1.125rem;font-weight:600;color:var(--light-tint);max-inline-size:40rem;line-height:1.4}
+.byline{display:flex;align-items:center;gap:12px;flex:none}
+.byline .name{margin:0;font-size:1rem;font-weight:700;color:var(--text);line-height:1.25;text-align:end}
+.byline img{inline-size:52px;block-size:52px;border-radius:50%;object-fit:cover;border:2px solid var(--light-tint);flex:none;background:var(--dark-green)}
+
+footer.site{background:var(--dark-green);color:var(--text);margin-block-start:8px}
+footer.site .inner{max-inline-size:1180px;margin-inline:auto;padding:28px 24px 36px;text-align:center}
+footer.site .label{margin:0 0 10px;font-size:1rem;font-weight:700;color:var(--text)}
+footer.site nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 22px}
+footer.site nav a{color:var(--light-tint);font-weight:700}
+footer.site nav a:hover{color:var(--text)}
+footer.site nav a:focus-visible{outline:3px solid var(--text);outline-offset:3px}
 
 .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;list-style:none;margin:0;padding:0}
 .card{background:var(--text);color:var(--dark-green);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 28px rgba(42,70,51,.28);border:1px solid transparent}
@@ -44,16 +56,23 @@ header.site p{margin:10px 0 0;font-size:1.125rem;font-weight:600;color:var(--lig
 
 @media (max-width:1023px){
   .gallery{grid-template-columns:repeat(2,1fr);gap:18px}
-  .wrap{padding:0 18px 48px}
+  .wrap{padding:0 18px 36px}
   header.site{margin-block-end:28px}
-  header.site .inner{padding:32px 18px 28px}
+  header.site .inner,footer.site .inner{padding-inline:18px}
+  header.site .inner{padding-block:32px 28px}
+  footer.site .inner{padding-block:24px 32px}
 }
 @media (max-width:639px){
   .gallery{grid-template-columns:1fr;gap:16px}
-  .wrap{padding:0 16px 40px}
+  .wrap{padding:0 16px 28px}
   header.site{margin-block-end:22px}
-  header.site .inner{padding:28px 16px 24px}
+  header.site .inner,footer.site .inner{padding-inline:16px}
+  header.site .inner{padding-block:28px 24px;gap:12px 16px}
+  footer.site .inner{padding-block:22px 28px}
   header.site h1{font-size:1.75rem}
+  .byline{gap:8px}
+  .byline .name{font-size:.8125rem;max-inline-size:7.2rem}
+  .byline img{inline-size:40px;block-size:40px}
 }
 
 :focus-visible{outline:3px solid var(--text);outline-offset:3px}
@@ -70,8 +89,14 @@ header.site p{margin:10px 0 0;font-size:1.125rem;font-weight:600;color:var(--lig
 <a class="skip" href="#gallery">Skip to gallery</a>
 <header class="site">
   <div class="inner">
-    <h1>Copilot HTML Dashboards</h1>
-    <p>A collection of interactive HTML dashboards.</p>
+    <div class="brand">
+      <h1>Copilot HTML Dashboards</h1>
+      <p>A collection of interactive HTML dashboards.</p>
+    </div>
+    <div class="byline">
+      <p class="name">Anand Vijayaragavan</p>
+      <img src="assets/anand.jpg" width="384" height="384" alt="Anand Vijayaragavan">
+    </div>
   </div>
 </header>
 <main class="wrap">
@@ -174,5 +199,15 @@ header.site p{margin:10px 0 0;font-size:1.125rem;font-weight:600;color:var(--lig
     </li>
   </ul>
 </main>
+<footer class="site">
+  <div class="inner">
+    <p class="label">Follow Tech Ease</p>
+    <nav aria-label="Follow Tech Ease">
+      <a href="https://open.spotify.com/show/0Cd8NsDE7kdQmLnbXe8Xx1">Spotify</a>
+      <a href="https://www.youtube.com/@anandvijayaragavan18">YouTube</a>
+      <a href="https://anandvijayaragavan.substack.com">Substack</a>
+    </nav>
+  </div>
+</footer>
 </body>
 </html>

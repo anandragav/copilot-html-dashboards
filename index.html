@@ -15,7 +15,7 @@
 }
 *,*::before,*::after{box-sizing:border-box}
 html{font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;font-size:16px;scroll-behavior:smooth}
-body{margin:0;background:var(--background);color:var(--text);line-height:1.5;min-block-size:100vh}
+body{margin:0;background:#FFFFFF;color:var(--dark-green);line-height:1.5;min-block-size:100vh}
 img{max-inline-size:100%;height:auto;display:block}
 a{color:var(--dark-green);font-weight:700;text-decoration-thickness:1.5px;text-underline-offset:3px}
 a:hover{color:var(--dark-green);text-decoration-thickness:2px}
@@ -38,11 +38,12 @@ footer.site .label{margin:0 0 10px;font-size:1rem;font-weight:700;color:var(--te
 footer.site nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 22px}
 footer.site nav a{color:var(--light-tint);font-weight:700}
 footer.site nav a:hover{color:var(--text)}
-footer.site nav a:focus-visible{outline:3px solid var(--text);outline-offset:3px}
+footer.site nav a:focus-visible{outline:3px solid var(--dark-green);outline-offset:3px}
+.skip:focus-visible{outline:3px solid var(--text);outline-offset:3px}
 
 .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;list-style:none;margin:0;padding:0}
-.card{background:var(--text);color:var(--dark-green);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 28px rgba(42,70,51,.28);border:1px solid transparent}
-.card:focus-within{border-color:var(--dark-green);box-shadow:0 0 0 3px var(--text),0 0 0 6px var(--dark-green)}
+.card{background:#FFFFFF;color:var(--dark-green);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 4px 16px rgba(42,70,51,.10);border:1px solid var(--light-tint)}
+.card:focus-within{border-color:var(--dark-green);box-shadow:0 0 0 3px #FFFFFF,0 0 0 6px var(--dark-green)}
 .thumb{display:block;background:var(--dark-green);aspect-ratio:16/9;overflow:hidden}
 .thumb img{inline-size:100%;block-size:100%;object-fit:cover;object-position:top center}
 .card:hover .thumb img{transform:scale(1.03)}

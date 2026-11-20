@@ -1,4 +1,4 @@
-# Build the flow
+# Power Automate documentation and training
 
 An interactive, hand-drawn, 14-step walkthrough of a Power Automate flow that imports mentions from a fictional media service, Pulsewire, into a SharePoint list.
 
@@ -6,7 +6,7 @@ Click + and the next step draws in. Each step opens a card anchored to it with a
 
 ## Demo
 
-[Open Build the flow](https://anandragav.github.io/copilot-html-dashboards/build-the-flow/)
+[Open Power Automate documentation and training](https://anandragav.github.io/copilot-html-dashboards/build-the-flow/)
 
 ## Use it in SharePoint
 

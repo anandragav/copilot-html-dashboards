@@ -10,7 +10,7 @@ body{background:var(--sand);color:#161616;font-family:var(--sans);display:flex;f
 .top{background:var(--ink);color:#fff;padding:14px 22px 16px}
 .eyebrow{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--light)}
 h1{font-family:var(--serif);font-weight:400;font-size:1.9rem;line-height:1.1;margin:.18em 0 .15em}
-.lede{margin:0;color:#dce6f0;font-size:.9rem;max-width:760px}
+.lede{margin:0;color:#dce6f0;font-size:.9rem;max-width:760px}.skill-dl{margin:6px 0 0;color:#dce6f0;font-size:.82rem;max-width:760px}.skill-dl a{color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:2px}.skill-dl a:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;background:#fff;border-bottom:1px solid var(--line);padding:8px 16px;position:relative;z-index:6}
 .prog{display:flex;align-items:center;gap:10px;font:700 .95rem var(--hand);color:var(--ink)}
 .dots{display:flex;gap:4px}.dots i{width:14px;height:6px;border-radius:3px;background:#e4e2de;display:block;transition:background .3s}.dots i.on{background:var(--ink)}.dots i.cur{background:var(--yellow);box-shadow:0 0 0 1px var(--ink) inset}
@@ -128,7 +128,7 @@ button{padding:6px 9px;font-size:.76rem}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.checks path{stroke-dashoffset:0}}
 </style></head><body>
-<header class="top"><div class="eyebrow">Training module &#183; Power Automate</div><h1>Build the flow: Pulsewire mentions into a SharePoint list</h1><p class="lede">Click + to add each step. It draws itself, and a card explains what it does and how to set it up.</p></header>
+<header class="top"><div class="eyebrow">Training module &#183; Power Automate</div><h1>Build the flow: Pulsewire mentions into a SharePoint list</h1><p class="lede">Click + to add each step. It draws itself, and a card explains what it does and how to set it up.</p><p class="skill-dl"><a href="power-automate-documentation-and-training.zip" download>Download the Copilot in SharePoint skill (.zip)</a> and make a page like this from your own flow: add the folder to your site's Agent Assets &gt; Skills library, upload your flow export zip to a document library, and give Copilot the link.</p></header>
 <nav class="bar" id="bar" aria-label="Flow controls"><div class="prog"><span id="progtxt" aria-live="polite">Step 1 of 14</span><div class="dots" id="dots" aria-hidden="true"></div></div>
 <div class="btns"><button id="bBack" type="button">&#8592; Back</button><button id="bNext" type="button" class="primary">Add step +</button><button id="bWhole" type="button">Whole flow</button><button id="bReplay" type="button">&#8635; Replay</button></div></nav>
 <main class="stage" id="stage">

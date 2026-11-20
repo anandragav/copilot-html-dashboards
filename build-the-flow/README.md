@@ -14,9 +14,18 @@ Click + and the next step draws in. Each step opens a card anchored to it with a
 2. In your SharePoint site, open Site Pages and upload the HTML page.
 3. The page uses the SharePoint-provided D3 and Chart.js libraries through the library manifest in the file. You do not need to add those libraries yourself.
 
+## Make one from your own flow
+
+[Download the Copilot in SharePoint skill](power-automate-documentation-and-training.zip) (`power-automate-documentation-and-training.zip`).
+
+1. Unzip it and add the `power-automate-documentation-and-training` folder to your site's Agent Assets > Skills library.
+2. Export your cloud flow (My flows > Export > Package (.zip)), upload the zip to a document library, and give Copilot in SharePoint the link.
+3. Copilot plays back the flow, asks you to approve the masking and a few questions, then builds a page like this one from the bundled template.
+
 ## Files in this folder
 
 The GitHub Pages demo and the SharePoint upload are two files, because hosts outside SharePoint do not honor the library manifest.
 
 - `index.html` is the GitHub Pages demo. It keeps the same library manifest, so it still works if you upload it to SharePoint. Outside SharePoint, a small loader fetches D3 7.9.0 and Chart.js 4.6.1 from jsDelivr only when `window.d3` or `window.Chart` is missing.
 - `build-the-flow.html` is the SharePoint-ready copy for upload to Site Pages. It expects SharePoint to supply D3 and Chart.js.
+- `power-automate-documentation-and-training.zip` is the Copilot in SharePoint skill that builds pages like this one.
